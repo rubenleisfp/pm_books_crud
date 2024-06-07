@@ -94,18 +94,7 @@ fun BookApp(
     bookViewModel: BookViewModel,
     modifier: Modifier = Modifier
 ) {
-    val bookState by bookViewModel.uiState.collectAsState()
-    BookScreen(
-        isLoading = bookState.isLoading,
-        books = bookState.books,
-        newBook = bookState.newBook,
-        onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
-        onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
-        onAddBook = { newTitle, newAuthor -> bookViewModel.add(newTitle, newAuthor) },
-        onUpdateBook = { book, newTitle, newAuthor -> bookViewModel.updateText(book, newTitle, newAuthor) },
-        onRemoveBook = { bookViewModel.remove(it) },
-        modifier = modifier
-    )
+
 }
 
 /**
@@ -131,27 +120,7 @@ fun BookScreen(
     onRemoveBook: (Book) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-    } else {
-        Column(modifier = modifier) {
-            CamposTexto(newBook, onNewBookTitleChange, onNewBookAuthorChange)
-            Button(
-                onClick = { onAddBook(newBook.title, newBook.author) },
-                modifier = Modifier.padding(top = 8.dp)
-            ) {
-                Text(stringResource(R.string.add_button))
-            }
-            Spacer(modifier = Modifier.size(30.dp))
-            BookList(
-                list = books,
-                onModifyBook = { book -> onUpdateBook(book, newBook.title, newBook.author) },
-                onCloseBook = { book -> onRemoveBook(book) }
-            )
-        }
-    }
+
 
 }
 
@@ -167,27 +136,7 @@ private fun CamposTexto(
     onNewBookTitleChange: (String) -> Unit,
     onNewBookAuthorChange: (String) -> Unit
 ) {
-    Row {
-        TextField(
-            value = newBook.title,
-            onValueChange = onNewBookTitleChange,
-            singleLine = true,
-            label = { Text(stringResource(R.string.input_titulo)) },
-            modifier = Modifier
-                .weight(1f)
-                .padding(8.dp)
-        )
 
-        TextField(
-            value = newBook.author,
-            onValueChange = onNewBookAuthorChange,
-            singleLine = true,
-            label = { Text(stringResource(R.string.input_author)) },
-            modifier = Modifier
-                .weight(1f)
-                .padding(8.dp)
-        )
-    }
 }
 
 /**
@@ -200,21 +149,7 @@ fun BookList(
     onCloseBook: (Book) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    LazyColumn(
-        modifier = modifier
-    ) {
-        items(
-            items = list,
-            key = { book -> book.id }
-        ) { book ->
-            BookItem(
-                book = book,
-                onModify = {onModifyBook(book)},
-                onClose = { onCloseBook(book) }
-            )
-            Divider()
-        }
-    }
+
 }
 
 /**
@@ -227,51 +162,12 @@ fun BookItem(
     onClose: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 16.dp),
-            text = book.title,
 
-            )
-        Text(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 16.dp),
-            text = book.author,
-
-            )
-        IconButton(onClick = onModify) {
-            Icon(Icons.Filled.Edit, contentDescription = "Modify")
-        }
-        IconButton(onClick = onClose) {
-            Icon(Icons.Filled.Close, contentDescription = "Close")
-        }
-    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun BookScreenPreview() {
-    val newBook = Book(id = 0, title = "", author = "")
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        BookScreen(
-            isLoading=false,
-            books = books,
-            newBook = newBook,
-            onNewBookTitleChange = {},
-            onNewBookAuthorChange = {},
-            onAddBook = {_,_->},
-            onUpdateBook = { _, _, _ -> },
-            onRemoveBook = {}
-        )
-    }
+
 }

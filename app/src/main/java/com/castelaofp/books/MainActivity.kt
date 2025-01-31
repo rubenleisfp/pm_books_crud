@@ -52,7 +52,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.castelaofp.books.ui.theme.BooksTheme
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.castelaofp.books.vm.Action
 import com.castelaofp.books.vm.Book
 import com.castelaofp.books.vm.BookViewModel
 import com.castelaofp.books.vm.books
@@ -97,11 +97,13 @@ fun BookApp(
     val bookState by bookViewModel.uiState.collectAsState()
     BookScreen(
         isLoading = bookState.isLoading,
+        action= bookState.action,
         books = bookState.books,
         newBook = bookState.newBook,
         onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
         onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
         onAddBook = { newTitle, newAuthor -> bookViewModel.add(newTitle, newAuthor) },
+        onEditAction = { book -> bookViewModel.editAction(book) },
         onUpdateBook = { book, newTitle, newAuthor -> bookViewModel.updateText(book, newTitle, newAuthor) },
         onRemoveBook = { bookViewModel.remove(it) },
         modifier = modifier
@@ -122,14 +124,17 @@ fun BookApp(
 @Composable
 fun BookScreen(
     isLoading: Boolean,
+    action: Action,
     books: List<Book>,
     newBook: Book,
     onNewBookTitleChange: (String) -> Unit,
     onNewBookAuthorChange: (String) -> Unit,
     onAddBook: (String, String) -> Unit,
+    onEditAction: (Book) -> Unit,
     onUpdateBook: (Book, String, String) -> Unit,
     onRemoveBook: (Book) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+
 ) {
     if (isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
@@ -138,16 +143,28 @@ fun BookScreen(
     } else {
         Column(modifier = modifier) {
             CamposTexto(newBook, onNewBookTitleChange, onNewBookAuthorChange)
-            Button(
-                onClick = { onAddBook(newBook.title, newBook.author) },
-                modifier = Modifier.padding(top = 8.dp)
-            ) {
+
+
+            if (action == Action.CREATE) {
+                Button(
+                    onClick = { onAddBook(newBook.title, newBook.author) },
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
                 Text(stringResource(R.string.add_button))
+                }
+            }
+            if (action == Action.MODIFY) {
+                Button(
+                    onClick = { onUpdateBook(newBook,newBook.title, newBook.author) },
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    Text(stringResource(R.string.modify_button))
+                }
             }
             Spacer(modifier = Modifier.size(30.dp))
             BookList(
                 list = books,
-                onModifyBook = { book -> onUpdateBook(book, newBook.title, newBook.author) },
+                onEditAction = { book -> onEditAction(book) },
                 onCloseBook = { book -> onRemoveBook(book) }
             )
         }
@@ -196,7 +213,7 @@ private fun CamposTexto(
 @Composable
 fun BookList(
     list: List<Book>,
-    onModifyBook: (Book) -> Unit,
+    onEditAction: (Book) -> Unit,
     onCloseBook: (Book) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -209,7 +226,7 @@ fun BookList(
         ) { book ->
             BookItem(
                 book = book,
-                onModify = {onModifyBook(book)},
+                onModify = {onEditAction(book)},
                 onClose = { onCloseBook(book) }
             )
             Divider()
@@ -270,8 +287,10 @@ fun BookScreenPreview() {
             onNewBookTitleChange = {},
             onNewBookAuthorChange = {},
             onAddBook = {_,_->},
+            onEditAction = {},
             onUpdateBook = { _, _, _ -> },
-            onRemoveBook = {}
+            onRemoveBook = {},
+            action = Action.CREATE
         )
     }
 }

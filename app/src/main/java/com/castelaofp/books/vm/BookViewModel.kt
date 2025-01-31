@@ -59,6 +59,11 @@ class BookViewModel : ViewModel() {
         }
     }
 
+    fun editAction(book: Book) {
+        _uiState.value = _uiState.value.copy(action = Action.MODIFY)
+        _uiState.value = _uiState.value.copy(newBook = book)
+    }
+
     /**
      * Actualizamos el titulo del libro introducido por teclado
      */

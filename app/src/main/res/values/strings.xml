@@ -3,4 +3,5 @@
     <string name="input_titulo">Introduzca el título</string>
     <string name="input_author">Introduzca el autor</string>
     <string name="add_button">Añadir</string>
+    <string name="modify_button">Modificar</string>
 </resources>

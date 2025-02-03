@@ -98,11 +98,6 @@ fun BookApp(
     BookScreen(
         isLoading = bookState.isLoading,
         books = bookState.books,
-        newBook = bookState.newBook,
-        onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
-        onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
-        onAddBook = { newTitle, newAuthor -> bookViewModel.add(newTitle, newAuthor) },
-        onUpdateBook = { book, newTitle, newAuthor -> bookViewModel.updateText(book, newTitle, newAuthor) },
         onRemoveBook = { bookViewModel.remove(it) },
         modifier = modifier
     )
@@ -123,11 +118,6 @@ fun BookApp(
 fun BookScreen(
     isLoading: Boolean,
     books: List<Book>,
-    newBook: Book,
-    onNewBookTitleChange: (String) -> Unit,
-    onNewBookAuthorChange: (String) -> Unit,
-    onAddBook: (String, String) -> Unit,
-    onUpdateBook: (Book, String, String) -> Unit,
     onRemoveBook: (Book) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -137,17 +127,8 @@ fun BookScreen(
         }
     } else {
         Column(modifier = modifier) {
-            CamposTexto(newBook, onNewBookTitleChange, onNewBookAuthorChange)
-            Button(
-                onClick = { onAddBook(newBook.title, newBook.author) },
-                modifier = Modifier.padding(top = 8.dp)
-            ) {
-                Text(stringResource(R.string.add_button))
-            }
-            Spacer(modifier = Modifier.size(30.dp))
             BookList(
                 list = books,
-                onModifyBook = { book -> onUpdateBook(book, newBook.title, newBook.author) },
                 onCloseBook = { book -> onRemoveBook(book) }
             )
         }
@@ -155,40 +136,6 @@ fun BookScreen(
 
 }
 
-/**
- * Contiene los campos de texto titulo y autor, que el usuario usará para
- * dar el alta/actualizar un libro
- *
- */
-@Composable
-@OptIn(ExperimentalMaterial3Api::class)
-private fun CamposTexto(
-    newBook: Book,
-    onNewBookTitleChange: (String) -> Unit,
-    onNewBookAuthorChange: (String) -> Unit
-) {
-    Row {
-        TextField(
-            value = newBook.title,
-            onValueChange = onNewBookTitleChange,
-            singleLine = true,
-            label = { Text(stringResource(R.string.input_titulo)) },
-            modifier = Modifier
-                .weight(1f)
-                .padding(8.dp)
-        )
-
-        TextField(
-            value = newBook.author,
-            onValueChange = onNewBookAuthorChange,
-            singleLine = true,
-            label = { Text(stringResource(R.string.input_author)) },
-            modifier = Modifier
-                .weight(1f)
-                .padding(8.dp)
-        )
-    }
-}
 
 /**
  * Mostramos la lista de libros
@@ -196,7 +143,6 @@ private fun CamposTexto(
 @Composable
 fun BookList(
     list: List<Book>,
-    onModifyBook: (Book) -> Unit,
     onCloseBook: (Book) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -209,7 +155,6 @@ fun BookList(
         ) { book ->
             BookItem(
                 book = book,
-                onModify = {onModifyBook(book)},
                 onClose = { onCloseBook(book) }
             )
             Divider()
@@ -223,7 +168,6 @@ fun BookList(
 @Composable
 fun BookItem(
     book: Book,
-    onModify: () -> Unit,
     onClose: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -245,9 +189,6 @@ fun BookItem(
             text = book.author,
 
             )
-        IconButton(onClick = onModify) {
-            Icon(Icons.Filled.Edit, contentDescription = "Modify")
-        }
         IconButton(onClick = onClose) {
             Icon(Icons.Filled.Close, contentDescription = "Close")
         }
@@ -266,11 +207,6 @@ fun BookScreenPreview() {
         BookScreen(
             isLoading=false,
             books = books,
-            newBook = newBook,
-            onNewBookTitleChange = {},
-            onNewBookAuthorChange = {},
-            onAddBook = {_,_->},
-            onUpdateBook = { _, _, _ -> },
             onRemoveBook = {}
         )
     }

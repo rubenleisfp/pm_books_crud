@@ -17,6 +17,7 @@ package com.castelaofp.books
 
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -62,11 +63,9 @@ import com.castelaofp.books.vm.books
  * Muestra una serie un catalogo de libros el cual podemos gestionar(CRUD)
  */
 class MainActivity : ComponentActivity() {
-    private val bookViewModel by viewModels<BookViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        bookViewModel.loadDefault()
 
         setContent {
             BooksTheme() {
@@ -75,7 +74,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    BookApp(bookViewModel)
+                    BookApp()
                 }
             }
         }
@@ -91,14 +90,10 @@ class MainActivity : ComponentActivity() {
  */
 @Composable
 fun BookApp(
-    bookViewModel: BookViewModel,
     modifier: Modifier = Modifier
 ) {
-    val bookState by bookViewModel.uiState.collectAsState()
     BookScreen(
-        isLoading = bookState.isLoading,
-        books = bookState.books,
-        onRemoveBook = { bookViewModel.remove(it) },
+        books = books,
         modifier = modifier
     )
 }
@@ -116,24 +111,18 @@ fun BookApp(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookScreen(
-    isLoading: Boolean,
     books: List<Book>,
-    onRemoveBook: (Book) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-    } else {
-        Column(modifier = modifier) {
-            BookList(
-                list = books,
-                onCloseBook = { book -> onRemoveBook(book) }
-            )
-        }
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+
     }
 
+    Column(modifier = modifier) {
+        BookList(
+            list = books
+        )
+    }
 }
 
 
@@ -143,7 +132,6 @@ fun BookScreen(
 @Composable
 fun BookList(
     list: List<Book>,
-    onCloseBook: (Book) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -154,8 +142,8 @@ fun BookList(
             key = { book -> book.id }
         ) { book ->
             BookItem(
-                book = book,
-                onClose = { onCloseBook(book) }
+                book = book
+
             )
             Divider()
         }
@@ -168,7 +156,6 @@ fun BookList(
 @Composable
 fun BookItem(
     book: Book,
-    onClose: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -189,7 +176,7 @@ fun BookItem(
             text = book.author,
 
             )
-        IconButton(onClick = onClose) {
+        IconButton(onClick = { Log.i("MainActivity", "onDeleteClick") }) {
             Icon(Icons.Filled.Close, contentDescription = "Close")
         }
     }
@@ -205,9 +192,7 @@ fun BookScreenPreview() {
         color = MaterialTheme.colorScheme.background
     ) {
         BookScreen(
-            isLoading=false,
             books = books,
-            onRemoveBook = {}
         )
     }
 }

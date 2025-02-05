@@ -2,7 +2,7 @@
 
 ## Descripción
 Esta aplicación permite gestionar un catálogo de libros, facilitando operaciones CRUD (Crear, Leer, Actualizar y Eliminar) sobre la colección de libros.
-Con respecto a la rama main, permite una gestión más clara de la edicion
+Con respecto a la rama CRUD, permite una gestión más clara de la edicion
 Al pulsar sobre el icono editar, se copian los campos del elemento seleccionado
 a las cajas de texto (titulo y autor) y se cambia el nombre de boton de 
 nuevo a modificar.

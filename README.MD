@@ -19,7 +19,3 @@ nuevo a modificar.
 - **Material 3**: Diseño moderno y accesible.
 - **ViewModel**: Para manejar la lógica de negocio.
 
-## Instalación y Ejecución
-1. Clonar el repositorio:
-   ```sh
-   git clone https://github.com/usuario/catalogo-libros.git

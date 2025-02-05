@@ -14,7 +14,3 @@ Esta aplicación permite cargar un catálogo de libros y eliminar aquellos que d
 - **Material 3**: Diseño moderno y accesible.
 - **ViewModel**: Para manejar la lógica de negocio.
 
-## Instalación y Ejecución
-1. Clonar el repositorio:
-   ```sh
-   git clone https://github.com/usuario/catalogo-libros.git

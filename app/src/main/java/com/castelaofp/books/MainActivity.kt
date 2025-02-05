@@ -17,6 +17,7 @@ package com.castelaofp.books
 
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
@@ -62,11 +63,9 @@ import com.castelaofp.books.vm.books
  * Muestra una serie un catalogo de libros el cual podemos gestionar(CRUD)
  */
 class MainActivity : ComponentActivity() {
-    private val bookViewModel by viewModels<BookViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        bookViewModel.loadDefault()
 
         setContent {
             BooksTheme() {
@@ -75,7 +74,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    BookApp(bookViewModel)
+                    BookApp()
                 }
             }
         }
@@ -91,10 +90,12 @@ class MainActivity : ComponentActivity() {
  */
 @Composable
 fun BookApp(
-    bookViewModel: BookViewModel,
     modifier: Modifier = Modifier
 ) {
-
+    BookScreen(
+        books = books,
+        modifier = modifier
+    )
 }
 
 /**
@@ -110,34 +111,20 @@ fun BookApp(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookScreen(
-    isLoading: Boolean,
     books: List<Book>,
-    newBook: Book,
-    onNewBookTitleChange: (String) -> Unit,
-    onNewBookAuthorChange: (String) -> Unit,
-    onAddBook: (String, String) -> Unit,
-    onUpdateBook: (Book, String, String) -> Unit,
-    onRemoveBook: (Book) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
 
+    }
 
+    Column(modifier = modifier) {
+        BookList(
+            list = books
+        )
+    }
 }
 
-/**
- * Contiene los campos de texto titulo y autor, que el usuario usará para
- * dar el alta/actualizar un libro
- *
- */
-@Composable
-@OptIn(ExperimentalMaterial3Api::class)
-private fun CamposTexto(
-    newBook: Book,
-    onNewBookTitleChange: (String) -> Unit,
-    onNewBookAuthorChange: (String) -> Unit
-) {
-
-}
 
 /**
  * Mostramos la lista de libros
@@ -145,11 +132,22 @@ private fun CamposTexto(
 @Composable
 fun BookList(
     list: List<Book>,
-    onModifyBook: (Book) -> Unit,
-    onCloseBook: (Book) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    LazyColumn(
+        modifier = modifier
+    ) {
+        items(
+            items = list,
+            key = { book -> book.id }
+        ) { book ->
+            BookItem(
+                book = book
 
+            )
+            Divider()
+        }
+    }
 }
 
 /**
@@ -158,16 +156,43 @@ fun BookList(
 @Composable
 fun BookItem(
     book: Book,
-    onModify: () -> Unit,
-    onClose: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    Row(
+        modifier = modifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 16.dp),
+            text = book.title,
 
+            )
+        Text(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 16.dp),
+            text = book.author,
+
+            )
+        IconButton(onClick = { Log.i("MainActivity", "onDeleteClick") }) {
+            Icon(Icons.Filled.Close, contentDescription = "Close")
+        }
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun BookScreenPreview() {
-
+    val newBook = Book(id = 0, title = "", author = "")
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        BookScreen(
+            books = books,
+        )
+    }
 }

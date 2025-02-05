@@ -94,13 +94,25 @@ fun BookApp(
     bookViewModel: BookViewModel,
     modifier: Modifier = Modifier
 ) {
+    /**
+     * No es conveniente pasar el viewModel a otras funciones, para evitar
+     * estar acoplados a este elemento.
+     * Por eso en este punto obtenemos lo que necesitamos
+     * tanto del UIState (información a pintar en la pantalla) como del ViewModel (eventos que
+     * queremos llamar desde la UI). Ver más en teoría, apartado viewModel - Buenas Prácticas
+     *
+     */
     val bookState by bookViewModel.uiState.collectAsState()
     BookScreen(
         isLoading = bookState.isLoading,
         books = bookState.books,
-        onRemoveBook = { bookViewModel.remove(it) },
+        //Paso una funcion que lambda. Recibe un libro y en el cuerpo de la funcion se llama al
+        //viewModel para eliminarlo
+        onRemoveBook = {book -> bookViewModel.remove(book) },
         modifier = modifier
     )
+    //Otra manera mas abreviada de hacer la lambda. Cuando solo hay un argumento se puede nombrar como it
+    //onRemoveBook = {bookViewModel.remove(it) },
 }
 
 /**
@@ -126,41 +138,23 @@ fun BookScreen(
             CircularProgressIndicator()
         }
     } else {
-        Column(modifier = modifier) {
-            BookList(
-                list = books,
-                onCloseBook = { book -> onRemoveBook(book) }
-            )
-        }
-    }
-
-}
-
-
-/**
- * Mostramos la lista de libros
- */
-@Composable
-fun BookList(
-    list: List<Book>,
-    onCloseBook: (Book) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    LazyColumn(
-        modifier = modifier
-    ) {
-        items(
-            items = list,
-            key = { book -> book.id }
-        ) { book ->
-            BookItem(
-                book = book,
-                onClose = { onCloseBook(book) }
-            )
-            Divider()
+        LazyColumn(
+            modifier = modifier
+        ) {
+            items(
+                items = books,
+                key = { book -> book.id }
+            ) { book ->
+                BookItem(
+                    book = book,
+                    onRemoveBook = { onRemoveBook(book) }
+                )
+                Divider()
+            }
         }
     }
 }
+
 
 /**
  * Mostramos un elemento libro, con su titulo, autor y los iconos de accion
@@ -168,7 +162,7 @@ fun BookList(
 @Composable
 fun BookItem(
     book: Book,
-    onClose: () -> Unit,
+    onRemoveBook: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -189,7 +183,7 @@ fun BookItem(
             text = book.author,
 
             )
-        IconButton(onClick = onClose) {
+        IconButton(onClick = onRemoveBook) {
             Icon(Icons.Filled.Close, contentDescription = "Close")
         }
     }

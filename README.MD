@@ -15,8 +15,3 @@ actualizar. En ese momento se actualizará la fila con los datos de las cajas de
 - **Jetpack Compose**: Para la interfaz de usuario declarativa.
 - **Material 3**: Diseño moderno y accesible.
 - **ViewModel**: Para manejar la lógica de negocio.
-
-## Instalación y Ejecución
-1. Clonar el repositorio:
-   ```sh
-   git clone https://github.com/usuario/catalogo-libros.git

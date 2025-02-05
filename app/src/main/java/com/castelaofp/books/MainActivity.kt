@@ -52,7 +52,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.castelaofp.books.ui.theme.BooksTheme
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.castelaofp.books.vm.Book
 import com.castelaofp.books.vm.BookViewModel
 import com.castelaofp.books.vm.books
@@ -88,6 +87,10 @@ class MainActivity : ComponentActivity() {
  *
  * Pasa esta informacion a BookScreen, la cual es la encarga de pintar
  * la pantalla y llamar a los eventos recibidos
+ *
+ * Obtenemos  lo que necesitamos del viewModel: uiState y eventos y los pasamos
+ * al resto de métodos que los requieran
+ *
  */
 @Composable
 fun BookApp(
@@ -99,8 +102,8 @@ fun BookApp(
         isLoading = bookState.isLoading,
         books = bookState.books,
         newBook = bookState.newBook,
-        onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
-        onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
+        onNewBookTitleChange = { title -> bookViewModel.setNewBookTitle(title) },
+        onNewBookAuthorChange = { author -> bookViewModel.setNewBookAuthor(author) },
         onAddBook = { newTitle, newAuthor -> bookViewModel.add(newTitle, newAuthor) },
         onUpdateBook = { book, newTitle, newAuthor -> bookViewModel.updateText(book, newTitle, newAuthor) },
         onRemoveBook = { bookViewModel.remove(it) },
@@ -110,7 +113,8 @@ fun BookApp(
 
 /**
  * Sirve para renderizar toda nuestra pantalla.
- * Durante la carga inicial se mostrara un CircleProgressBar, simulando la carga de la info de un API
+ * Durante la carga inicial se mostrara un CircleProgressBar, simulando la carga
+ * de la info de un API
  * Desligada del viewModel para poder hacer previews de la pantalla.
  *
  * Mostramos:
@@ -146,9 +150,9 @@ fun BookScreen(
             }
             Spacer(modifier = Modifier.size(30.dp))
             BookList(
-                list = books,
+                books = books,
                 onModifyBook = { book -> onUpdateBook(book, newBook.title, newBook.author) },
-                onCloseBook = { book -> onRemoveBook(book) }
+                onRemoveBook = { book -> onRemoveBook(book) }
             )
         }
     }
@@ -195,22 +199,22 @@ private fun CamposTexto(
  */
 @Composable
 fun BookList(
-    list: List<Book>,
+    books: List<Book>,
     onModifyBook: (Book) -> Unit,
-    onCloseBook: (Book) -> Unit,
+    onRemoveBook: (Book) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
         modifier = modifier
     ) {
         items(
-            items = list,
+            items = books,
             key = { book -> book.id }
         ) { book ->
             BookItem(
                 book = book,
                 onModify = {onModifyBook(book)},
-                onClose = { onCloseBook(book) }
+                onClose = { onRemoveBook(book) }
             )
             Divider()
         }

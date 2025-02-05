@@ -5,7 +5,8 @@ Esta aplicación permite gestionar un catálogo de libros, facilitando operacion
 
 ## Características
 - **Visualización**: Muestra una lista de libros con sus detalles.
-- **Edición**: Permite modificar los detalles de los libros existentes.
+- **Edición**: Permite modificar los detalles de los libros existentes. Para ello escribimos el autor y titulo en las cajas de texto y pulsamos sobre el boton editar de la fila que queremos
+actualizar. En ese momento se actualizará la fila con los datos de las cajas de texto.
 - **Eliminación**: Se pueden eliminar libros del catálogo.
 - **Interfaz Moderna**: Utiliza Jetpack Compose para una experiencia fluida e intuitiva.
 

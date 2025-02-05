@@ -128,37 +128,24 @@ fun BookScreen(
     }
     //TODO: pasaremos el evento onRemove a BookList
     Column(modifier = modifier) {
-        BookList(
-            list = books
-        )
-    }
-}
+        //TODO: pasaremos el evento onRemove a BookList
+        LazyColumn(
+            modifier = modifier
+        ) {
+            items(
+                items = books,
+                key = { book -> book.id }
+            ) { book ->
+                BookItem(
+                    book = book
 
-
-/**
- * Mostramos la lista de libros
- */
-@Composable
-fun BookList(
-    list: List<Book>,
-    modifier: Modifier = Modifier
-) {
-    //TODO: pasaremos el evento onRemove a BookList
-    LazyColumn(
-        modifier = modifier
-    ) {
-        items(
-            items = list,
-            key = { book -> book.id }
-        ) { book ->
-            BookItem(
-                book = book
-
-            )
-            Divider()
+                )
+                Divider()
+            }
         }
     }
 }
+
 
 /**
  * Mostramos un elemento libro, con su titulo, autor y los iconos de accion

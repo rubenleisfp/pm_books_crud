@@ -64,9 +64,13 @@ import com.castelaofp.books.vm.books
  */
 class MainActivity : ComponentActivity() {
 
+    //TODO
+    //Hay que crear una instancia del viewModel
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
+        //TODO
+        //Invocar el metodo de carga de libros del viewModel
         setContent {
             BooksTheme() {
                 // A surface container using the 'background' color from the theme
@@ -92,6 +96,10 @@ class MainActivity : ComponentActivity() {
 fun BookApp(
     modifier: Modifier = Modifier
 ) {
+    //TODO
+    //Recibiremos el viewModel. De El podemos extraer el bookState, que contendra
+    //los libros. No podemos cargarlos directamente de la clase Book. Pasaremos el evento remove a
+    //a BookScreen. Tambien pasaremos el isLoading para mostrar la animacion mientras cargan
     BookScreen(
         books = books,
         modifier = modifier
@@ -114,10 +122,11 @@ fun BookScreen(
     books: List<Book>,
     modifier: Modifier = Modifier
 ) {
+    //TODO: si estan cargando debemos mostrar un CircularProgressIndicator
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
 
     }
-
+    //TODO: pasaremos el evento onRemove a BookList
     Column(modifier = modifier) {
         BookList(
             list = books
@@ -134,6 +143,7 @@ fun BookList(
     list: List<Book>,
     modifier: Modifier = Modifier
 ) {
+    //TODO: pasaremos el evento onRemove a BookList
     LazyColumn(
         modifier = modifier
     ) {
@@ -158,6 +168,7 @@ fun BookItem(
     book: Book,
     modifier: Modifier = Modifier
 ) {
+    //TODO: invocaremos el evento onRemove al hacer click
     Row(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically

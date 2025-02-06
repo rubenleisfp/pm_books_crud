@@ -225,7 +225,7 @@ fun BookList(
         items(items = books, key = { book -> book.id }) { book ->
             BookItem(book = book,
                 onModify = { onModifyBook(book) },
-                onClose = { onRemoveBook(book) })
+                onRemove = { onRemoveBook(book) })
             Divider()
         }
     }
@@ -236,12 +236,12 @@ fun BookList(
  *
  * @param book libro a mostrar
  * @param onModify llamada cuando el usuario pulsa el botón de modificar un libro
- * @param onClose llamada cuando el usuario pulsa el botón de eliminar un libro
+ * @param onRemove llamada cuando el usuario pulsa el botón de eliminar un libro
  * @param modifier modifier para el composable
  */
 @Composable
 fun BookItem(
-    book: Book, onModify: () -> Unit, onClose: () -> Unit, modifier: Modifier = Modifier
+    book: Book, onModify: () -> Unit, onRemove: () -> Unit, modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier, verticalAlignment = Alignment.CenterVertically
@@ -263,7 +263,7 @@ fun BookItem(
         IconButton(onClick = onModify) {
             Icon(Icons.Filled.Edit, contentDescription = "Modify")
         }
-        IconButton(onClick = onClose) {
+        IconButton(onClick = onRemove) {
             Icon(Icons.Filled.Close, contentDescription = "Close")
         }
     }

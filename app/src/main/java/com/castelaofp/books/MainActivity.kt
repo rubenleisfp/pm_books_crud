@@ -73,8 +73,7 @@ class MainActivity : ComponentActivity() {
             BooksTheme() {
                 // A surface container using the 'background' color from the theme
                 Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
                 ) {
                     BookApp(bookViewModel)
                 }
@@ -93,19 +92,23 @@ class MainActivity : ComponentActivity() {
  * Obtenemos  lo que necesitamos del viewModel: uiState y eventos y los pasamos
  * al resto de métodos que los requieran
  *
+ * @bookViewModel viewModel que contiene toda la logica del app
  */
 @Composable
 fun BookApp(
-    bookViewModel: BookViewModel,
-    modifier: Modifier = Modifier
+    bookViewModel: BookViewModel, modifier: Modifier = Modifier
 ) {
     val bookState by bookViewModel.uiState.collectAsState()
     BookScreen(
-        bookState=bookState,
+        bookState = bookState,
         onNewBookTitleChange = { title -> bookViewModel.setNewBookTitle(title) },
         onNewBookAuthorChange = { author -> bookViewModel.setNewBookAuthor(author) },
         onAddBook = { newTitle, newAuthor -> bookViewModel.add(newTitle, newAuthor) },
-        onUpdateBook = { book, newTitle, newAuthor -> bookViewModel.updateText(book, newTitle, newAuthor) },
+        onUpdateBook = { book, newTitle, newAuthor ->
+            bookViewModel.updateText(
+                book, newTitle, newAuthor
+            )
+        },
         onRemoveBook = { bookViewModel.remove(it) },
         modifier = modifier
     )
@@ -121,6 +124,14 @@ fun BookApp(
  * -Las cajas de texto para crear/actualizar un nuevo libro
  * -El boton de añadir
  * -La lista con los libros incluidos hasta ahora
+ *
+ * @param bookState estado con la lista de libros y el nuevo libro
+ * @param onNewBookTitleChange llamada cuando el usuario cambia el título del nuevo libro
+ * @param onNewBookAuthorChange llamada cuando el usuario cambia el autor del nuevo libro
+ * @param onAddBook llamada cuando el usuario pulsa el botón de agregar un nuevo libro
+ * @param onUpdateBook llamada cuando el usuario pulsa el botón de actualizar un libro
+ * @param onRemoveBook llamada cuando el usuario pulsa el botón de borrar un libro
+ * @param modifier modifier para el composable
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -147,11 +158,11 @@ fun BookScreen(
                 Text(stringResource(R.string.add_button))
             }
             Spacer(modifier = Modifier.size(30.dp))
-            BookList(
-                books = bookState.books,
-                onModifyBook = { book -> onUpdateBook(book, bookState.newBook.title, bookState.newBook.author) },
-                onRemoveBook = { book -> onRemoveBook(book) }
-            )
+            BookList(books = bookState.books, onModifyBook = { book ->
+                onUpdateBook(
+                    book, bookState.newBook.title, bookState.newBook.author
+                )
+            }, onRemoveBook = { book -> onRemoveBook(book) })
         }
     }
 
@@ -161,13 +172,14 @@ fun BookScreen(
  * Contiene los campos de texto titulo y autor, que el usuario usará para
  * dar el alta/actualizar un libro
  *
+ * @param newBook libro que se va a dar de alta/actualizar
+ * @param onNewBookTitleChange llamada cuando el usuario cambia el titulo del libro
+ * @param onNewBookAuthorChange llamada cuando el usuario cambia el autor del libro
  */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun CamposTexto(
-    newBook: Book,
-    onNewBookTitleChange: (String) -> Unit,
-    onNewBookAuthorChange: (String) -> Unit
+    newBook: Book, onNewBookTitleChange: (String) -> Unit, onNewBookAuthorChange: (String) -> Unit
 ) {
     Row {
         TextField(
@@ -194,6 +206,11 @@ private fun CamposTexto(
 
 /**
  * Mostramos la lista de libros
+ *
+ * @param books lista de libros a mostrar
+ * @param onModifyBook llamada cuando el usuario pulsa el botón de modificar un libro
+ * @param onRemoveBook llamada cuando el usuario pulsa el botón de borrar un libro
+ * @param modifier modifier para el composable
  */
 @Composable
 fun BookList(
@@ -205,15 +222,10 @@ fun BookList(
     LazyColumn(
         modifier = modifier
     ) {
-        items(
-            items = books,
-            key = { book -> book.id }
-        ) { book ->
-            BookItem(
-                book = book,
-                onModify = {onModifyBook(book)},
-                onClose = { onRemoveBook(book) }
-            )
+        items(items = books, key = { book -> book.id }) { book ->
+            BookItem(book = book,
+                onModify = { onModifyBook(book) },
+                onClose = { onRemoveBook(book) })
             Divider()
         }
     }
@@ -221,17 +233,18 @@ fun BookList(
 
 /**
  * Mostramos un elemento libro, con su titulo, autor y los iconos de accion
+ *
+ * @param book libro a mostrar
+ * @param onModify llamada cuando el usuario pulsa el botón de modificar un libro
+ * @param onClose llamada cuando el usuario pulsa el botón de eliminar un libro
+ * @param modifier modifier para el composable
  */
 @Composable
 fun BookItem(
-    book: Book,
-    onModify: () -> Unit,
-    onClose: () -> Unit,
-    modifier: Modifier = Modifier
+    book: Book, onModify: () -> Unit, onClose: () -> Unit, modifier: Modifier = Modifier
 ) {
     Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically
+        modifier = modifier, verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
             modifier = Modifier
@@ -260,18 +273,15 @@ fun BookItem(
 @Preview
 @Composable
 fun BookScreenPreview() {
-    val bookState = BookState(emptyList(), Book(0,title="", author=""))
+    val bookState = BookState(emptyList(), Book(0, title = "", author = ""))
     Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
+        modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
     ) {
-        BookScreen(
-            bookState = bookState,
+        BookScreen(bookState = bookState,
             onNewBookTitleChange = {},
             onNewBookAuthorChange = {},
-            onAddBook = {_,_->},
+            onAddBook = { _, _ -> },
             onUpdateBook = { _, _, _ -> },
-            onRemoveBook = {}
-        )
+            onRemoveBook = {})
     }
 }

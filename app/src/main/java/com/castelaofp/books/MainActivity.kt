@@ -97,9 +97,11 @@ fun BookApp(
     modifier: Modifier = Modifier
 ) {
     //TODO
-    //Recibiremos el viewModel. De El podemos extraer el bookState, que contendra
-    //los libros. No podemos cargarlos directamente de la clase Book. Pasaremos el evento remove a
-    //a BookScreen. Tambien pasaremos el isLoading para mostrar la animacion mientras cargan
+    //En esta función, debemos recibir como argumento el viewModel
+    //Ahora mismo estamos pasando como argumentos a BookScreen la lista de libros
+    //obtenida directamente del datasource. Esto no es lo adecuado cuando usamos viewModel.
+    //Lo mas conveniente seria obtener el BookState del viewModel que contiene la lista de libros
+    //Este bookState lo podemos pasar a BookScreen para que obtenga la informacion que requiera del mismo
     BookScreen(
         books = books,
         modifier = modifier

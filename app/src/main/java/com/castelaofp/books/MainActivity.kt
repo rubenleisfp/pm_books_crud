@@ -156,19 +156,15 @@ fun BookScreen(
     }
 }
 
+
 /**
- * Sirve para renderizar toda nuestra pantalla.
- * Durante la carga inicial se mostrara un CircleProgressBar, simulando la carga de la info de un API.
- * Desligada del viewModel para poder hacer previews de la pantalla.
+ * Muestra un item de libro en una fila con los datos de autor y t tulo.
+ * El componente tambi n incluye un bot n para eliminar el libro, que cuando se hace clic llama a la funci n proporcionada en [onRemoveBook].
  *
- * Mostramos:
- * - Las cajas de texto para crear/actualizar un nuevo libro.
- * - El botón de añadir.
- * - La lista con los libros incluidos hasta ahora.
- *
- * @param bookState El estado actual de los libros, que contiene la lista de libros y el estado de carga.
- * @param onRemoveBook Una función lambda que recibe un libro y realiza la acción de eliminarlo.
- * @param modifier Un modificador opcional para ajustar la apariencia y el diseño del componente.
+ * @param book El libro a mostrar
+ * @param onRemoveBook Una funci n lambda que se llama cuando se hace clic en el bot n de eliminar.
+ * La funci n no recibe par metros y no devuelve nada.
+ * @param modifier Un modificador opcional para ajustar la apariencia y el dise o del componente.
  */
 @Composable
 fun BookItem(

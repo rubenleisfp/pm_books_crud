@@ -46,6 +46,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.saveable.autoSaver
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -53,6 +54,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.castelaofp.books.ui.theme.BooksTheme
 import com.castelaofp.books.vm.Book
+import com.castelaofp.books.vm.BookState
 import com.castelaofp.books.vm.BookViewModel
 import com.castelaofp.books.vm.books
 
@@ -99,9 +101,7 @@ fun BookApp(
 ) {
     val bookState by bookViewModel.uiState.collectAsState()
     BookScreen(
-        isLoading = bookState.isLoading,
-        books = bookState.books,
-        newBook = bookState.newBook,
+        bookState=bookState,
         onNewBookTitleChange = { title -> bookViewModel.setNewBookTitle(title) },
         onNewBookAuthorChange = { author -> bookViewModel.setNewBookAuthor(author) },
         onAddBook = { newTitle, newAuthor -> bookViewModel.add(newTitle, newAuthor) },
@@ -125,9 +125,7 @@ fun BookApp(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookScreen(
-    isLoading: Boolean,
-    books: List<Book>,
-    newBook: Book,
+    bookState: BookState,
     onNewBookTitleChange: (String) -> Unit,
     onNewBookAuthorChange: (String) -> Unit,
     onAddBook: (String, String) -> Unit,
@@ -135,23 +133,23 @@ fun BookScreen(
     onRemoveBook: (Book) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (isLoading) {
+    if (bookState.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
     } else {
         Column(modifier = modifier) {
-            CamposTexto(newBook, onNewBookTitleChange, onNewBookAuthorChange)
+            CamposTexto(bookState.newBook, onNewBookTitleChange, onNewBookAuthorChange)
             Button(
-                onClick = { onAddBook(newBook.title, newBook.author) },
+                onClick = { onAddBook(bookState.newBook.title, bookState.newBook.author) },
                 modifier = Modifier.padding(top = 8.dp)
             ) {
                 Text(stringResource(R.string.add_button))
             }
             Spacer(modifier = Modifier.size(30.dp))
             BookList(
-                books = books,
-                onModifyBook = { book -> onUpdateBook(book, newBook.title, newBook.author) },
+                books = bookState.books,
+                onModifyBook = { book -> onUpdateBook(book, bookState.newBook.title, bookState.newBook.author) },
                 onRemoveBook = { book -> onRemoveBook(book) }
             )
         }
@@ -262,15 +260,13 @@ fun BookItem(
 @Preview
 @Composable
 fun BookScreenPreview() {
-    val newBook = Book(id = 0, title = "", author = "")
+    val bookState = BookState(emptyList(), Book(0,title="", author=""))
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
         BookScreen(
-            isLoading=false,
-            books = books,
-            newBook = newBook,
+            bookState = bookState,
             onNewBookTitleChange = {},
             onNewBookAuthorChange = {},
             onAddBook = {_,_->},

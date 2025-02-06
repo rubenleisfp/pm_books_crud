@@ -1,5 +1,5 @@
 package com.castelaofp.books.vm
 
-enum class Action {
+enum class ActionEnum {
     CREATE, MODIFY
 }

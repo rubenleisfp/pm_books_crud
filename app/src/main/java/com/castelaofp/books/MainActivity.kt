@@ -52,8 +52,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.castelaofp.books.ui.theme.BooksTheme
-import com.castelaofp.books.vm.Action
+import com.castelaofp.books.vm.ActionEnum
 import com.castelaofp.books.vm.Book
+import com.castelaofp.books.vm.BookState
 import com.castelaofp.books.vm.BookViewModel
 import com.castelaofp.books.vm.books
 
@@ -88,6 +89,11 @@ class MainActivity : ComponentActivity() {
  *
  * Pasa esta informacion a BookScreen, la cual es la encarga de pintar
  * la pantalla y llamar a los eventos recibidos
+ *
+ * Obtenemos  lo que necesitamos del viewModel: uiState y eventos y los pasamos
+ * al resto de métodos que los requieran
+ *
+ * @bookViewModel viewModel que contiene toda la logica del app
  */
 @Composable
 fun BookApp(
@@ -96,10 +102,7 @@ fun BookApp(
 ) {
     val bookState by bookViewModel.uiState.collectAsState()
     BookScreen(
-        isLoading = bookState.isLoading,
-        action= bookState.action,
-        books = bookState.books,
-        newBook = bookState.newBook,
+        bookState = bookState,
         onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
         onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
         onAddBook = { newTitle, newAuthor -> bookViewModel.add(newTitle, newAuthor) },
@@ -110,23 +113,30 @@ fun BookApp(
     )
 }
 
+
 /**
  * Sirve para renderizar toda nuestra pantalla.
- * Durante la carga inicial se mostrara un CircleProgressBar, simulando la carga de la info de un API
+ * Durante la carga inicial se mostrara un CircleProgressBar, simulando la carga
+ * de la info de un API
  * Desligada del viewModel para poder hacer previews de la pantalla.
  *
  * Mostramos:
  * -Las cajas de texto para crear/actualizar un nuevo libro
  * -El boton de añadir
  * -La lista con los libros incluidos hasta ahora
+ *
+ * @param bookState estado con la lista de libros y el nuevo libro
+ * @param onNewBookTitleChange llamada cuando el usuario cambia el título del nuevo libro
+ * @param onNewBookAuthorChange llamada cuando el usuario cambia el autor del nuevo libro
+ * @param onAddBook llamada cuando el usuario pulsa el botón de agregar un nuevo libro
+ * @param onUpdateBook llamada cuando el usuario pulsa el botón de actualizar un libro
+ * @param onRemoveBook llamada cuando el usuario pulsa el botón de borrar un libro
+ * @param modifier modifier para el composable
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookScreen(
-    isLoading: Boolean,
-    action: Action,
-    books: List<Book>,
-    newBook: Book,
+    bookState: BookState,
     onNewBookTitleChange: (String) -> Unit,
     onNewBookAuthorChange: (String) -> Unit,
     onAddBook: (String, String) -> Unit,
@@ -134,28 +144,27 @@ fun BookScreen(
     onUpdateBook: (Book, String, String) -> Unit,
     onRemoveBook: (Book) -> Unit,
     modifier: Modifier = Modifier,
-
-) {
-    if (isLoading) {
+    ) {
+    if (bookState.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
     } else {
         Column(modifier = modifier) {
-            CamposTexto(newBook, onNewBookTitleChange, onNewBookAuthorChange)
+            CamposTexto(bookState.newBook, onNewBookTitleChange, onNewBookAuthorChange)
 
 
-            if (action == Action.CREATE) {
+            if (bookState.action == ActionEnum.CREATE) {
                 Button(
-                    onClick = { onAddBook(newBook.title, newBook.author) },
+                    onClick = { onAddBook(bookState.newBook.title, bookState.newBook.author) },
                     modifier = Modifier.padding(top = 8.dp)
                 ) {
                 Text(stringResource(R.string.add_button))
                 }
             }
-            if (action == Action.MODIFY) {
+            if (bookState.action == ActionEnum.MODIFY) {
                 Button(
-                    onClick = { onUpdateBook(newBook,newBook.title, newBook.author) },
+                    onClick = { onUpdateBook(bookState.newBook,bookState.newBook.title, bookState.newBook.author) },
                     modifier = Modifier.padding(top = 8.dp)
                 ) {
                     Text(stringResource(R.string.modify_button))
@@ -163,7 +172,7 @@ fun BookScreen(
             }
             Spacer(modifier = Modifier.size(30.dp))
             BookList(
-                list = books,
+                list = bookState.books,
                 onEditAction = { book -> onEditAction(book) },
                 onCloseBook = { book -> onRemoveBook(book) }
             )
@@ -176,6 +185,9 @@ fun BookScreen(
  * Contiene los campos de texto titulo y autor, que el usuario usará para
  * dar el alta/actualizar un libro
  *
+ * @param newBook libro que se va a dar de alta/actualizar
+ * @param onNewBookTitleChange llamada cuando el usuario cambia el titulo del libro
+ * @param onNewBookAuthorChange llamada cuando el usuario cambia el autor del libro
  */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
@@ -209,6 +221,11 @@ private fun CamposTexto(
 
 /**
  * Mostramos la lista de libros
+ *
+ * @param books lista de libros a mostrar
+ * @param onModifyBook llamada cuando el usuario pulsa el botón de modificar un libro
+ * @param onRemoveBook llamada cuando el usuario pulsa el botón de borrar un libro
+ * @param modifier modifier para el composable
  */
 @Composable
 fun BookList(
@@ -236,6 +253,11 @@ fun BookList(
 
 /**
  * Mostramos un elemento libro, con su titulo, autor y los iconos de accion
+ *
+ * @param book libro a mostrar
+ * @param onModify llamada cuando el usuario pulsa el botón de modificar un libro
+ * @param onRemove llamada cuando el usuario pulsa el botón de eliminar un libro
+ * @param modifier modifier para el composable
  */
 @Composable
 fun BookItem(
@@ -281,16 +303,14 @@ fun BookScreenPreview() {
         color = MaterialTheme.colorScheme.background
     ) {
         BookScreen(
-            isLoading=false,
-            books = books,
-            newBook = newBook,
+            bookState = BookState(books = books, newBook = newBook, action = ActionEnum.CREATE, isLoading = false),
             onNewBookTitleChange = {},
             onNewBookAuthorChange = {},
             onAddBook = {_,_->},
             onEditAction = {},
             onUpdateBook = { _, _, _ -> },
             onRemoveBook = {},
-            action = Action.CREATE
+
         )
     }
 }

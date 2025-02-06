@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import com.castelaofp.books.ui.theme.BooksTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.castelaofp.books.vm.Book
+import com.castelaofp.books.vm.BookState
 import com.castelaofp.books.vm.BookViewModel
 import com.castelaofp.books.vm.books
 
@@ -88,6 +89,9 @@ class MainActivity : ComponentActivity() {
  *
  * Pasa esta informacion a BookScreen, la cual es la encarga de pintar
  * la pantalla y llamar a los eventos recibidos
+ *
+ * @param bookViewModel El viewModel asociado a la pantalla
+ * @param modifier Un modificador opcional para ajustar la apariencia y el diseño del componente.
  */
 @Composable
 fun BookApp(
@@ -104,8 +108,7 @@ fun BookApp(
      */
     val bookState by bookViewModel.uiState.collectAsState()
     BookScreen(
-        isLoading = bookState.isLoading,
-        books = bookState.books,
+        bookState = bookState,
         //Paso una funcion que lambda. Recibe un libro y en el cuerpo de la funcion se llama al
         //viewModel para eliminarlo
         onRemoveBook = {book -> bookViewModel.remove(book) },
@@ -120,20 +123,18 @@ fun BookApp(
  * Durante la carga inicial se mostrara un CircleProgressBar, simulando la carga de la info de un API
  * Desligada del viewModel para poder hacer previews de la pantalla.
  *
- * Mostramos:
- * -Las cajas de texto para crear/actualizar un nuevo libro
- * -El boton de añadir
- * -La lista con los libros incluidos hasta ahora
+ * @param bookState El estado actual de los libros, que contiene la lista de libros y el estado de carga.
+ * @param onRemoveBook Una función lambda que recibe un libro y realiza la acción de eliminarlo.
+ * @param modifier Un modificador opcional para ajustar la apariencia y el diseño del componente.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookScreen(
-    isLoading: Boolean,
-    books: List<Book>,
+    bookState: BookState,
     onRemoveBook: (Book) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (isLoading) {
+    if (bookState.isLoading) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
@@ -142,7 +143,7 @@ fun BookScreen(
             modifier = modifier
         ) {
             items(
-                items = books,
+                items = bookState.books,
                 key = { book -> book.id }
             ) { book ->
                 BookItem(
@@ -155,9 +156,19 @@ fun BookScreen(
     }
 }
 
-
 /**
- * Mostramos un elemento libro, con su titulo, autor y los iconos de accion
+ * Sirve para renderizar toda nuestra pantalla.
+ * Durante la carga inicial se mostrara un CircleProgressBar, simulando la carga de la info de un API.
+ * Desligada del viewModel para poder hacer previews de la pantalla.
+ *
+ * Mostramos:
+ * - Las cajas de texto para crear/actualizar un nuevo libro.
+ * - El botón de añadir.
+ * - La lista con los libros incluidos hasta ahora.
+ *
+ * @param bookState El estado actual de los libros, que contiene la lista de libros y el estado de carga.
+ * @param onRemoveBook Una función lambda que recibe un libro y realiza la acción de eliminarlo.
+ * @param modifier Un modificador opcional para ajustar la apariencia y el diseño del componente.
  */
 @Composable
 fun BookItem(
@@ -193,14 +204,13 @@ fun BookItem(
 @Preview
 @Composable
 fun BookScreenPreview() {
-    val newBook = Book(id = 0, title = "", author = "")
+    val bookState = BookState(emptyList(), isLoading = false)
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
         BookScreen(
-            isLoading=false,
-            books = books,
+            bookState = bookState,
             onRemoveBook = {}
         )
     }

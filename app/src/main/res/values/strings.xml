@@ -4,5 +4,6 @@
     <string name="input_author">Introduzca el autor</string>
     <string name="add_button">Añadir</string>
     <string name="modify_button">Modificar</string>
+    <string name="acept_button">Añadir</string>
     <string name="cancel_button">Cancelar</string>
 </resources>

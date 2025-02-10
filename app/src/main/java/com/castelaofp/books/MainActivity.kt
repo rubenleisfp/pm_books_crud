@@ -313,7 +313,7 @@ fun BooksReadAction(
                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                 .fillMaxWidth()
         ) {
-            Text(stringResource(R.string.add_button))
+            Text(stringResource(R.string.acept_button))
         }
     }
 }

@@ -77,6 +77,16 @@ class BookViewModel : ViewModel() {
     }
 
     /**
+     * Cancela la creación o edición de un libro.
+     *
+     * Al recibir esta función, se cambia el estado a READ para que el usuario pueda ver la lista de libros
+     * y se borra el libro que se estaba creando o editando.
+     */
+    fun cancelAction() {
+        _uiState.value = _uiState.value.copy(action = ActionEnum.READ)
+    }
+
+    /**
      * Prepara la edición de un libro.
      *
      * Al recibir como parámetro el libro a editar, se copian sus datos en el nuevo libro

@@ -8,7 +8,6 @@ data class BookState(
     val books: List<Book> = emptyList(),
     // Libro que introduce el usuario por teclado para el create o update
     val newBook: Book = Book(0, "", ""),
-    val isLoading: Boolean = true,
-    val action: ActionEnum = ActionEnum.CREATE
+    val action: ActionEnum = ActionEnum.READ
 
 )

@@ -21,9 +21,9 @@ class BookViewModel : ViewModel() {
      */
     fun loadDefault() {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy (isLoading=true)
+            _uiState.value = _uiState.value.copy (action = ActionEnum.IS_LOADING)
             delay(3000)
-            _uiState.value = _uiState.value.copy(books = books, newBook = Book(0, "", ""), isLoading = false)
+            _uiState.value = _uiState.value.copy(books = books, newBook = Book(0, "", ""), action = ActionEnum.READ)
         }
     }
 

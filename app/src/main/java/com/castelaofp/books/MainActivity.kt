@@ -258,8 +258,8 @@ fun BookList(
  * Mostramos un elemento libro, con su titulo, autor y los iconos de accion
  *
  * @param book libro a mostrar
- * @param onModify llamada cuando el usuario pulsa el botón de modificar un libro
- * @param onRemove llamada cuando el usuario pulsa el botón de eliminar un libro
+ * @param onModify llamada cuando el usuario pulsa el icono de modificar un libro
+ * @param onRemove llamada cuando el usuario pulsa el icono de eliminar un libro
  * @param modifier modifier para el composable
  */
 @Composable

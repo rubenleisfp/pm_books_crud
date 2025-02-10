@@ -27,6 +27,7 @@ import androidx.compose.foundation.layout.Row
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -106,20 +107,17 @@ fun BookApp(
     modifier: Modifier = Modifier
 ) {
     val bookState by bookViewModel.uiState.collectAsState()
-    BookScreen(
+    BooksScreen(
         bookState = bookState,
         onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
         onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
-        onAddBook = { newTitle, newAuthor -> bookViewModel.add(newTitle, newAuthor) },
+        onAddBook = { bookViewModel.add() },
         onEditAction = { book -> bookViewModel.editAction(book) },
-        onUpdateBook = { book, newTitle, newAuthor ->
-            bookViewModel.updateText(
-                book,
-                newTitle,
-                newAuthor
-            )
+        onUpdateBook = {
+            bookViewModel.updateBook()
         },
-        onRemoveBook = { bookViewModel.remove(it) },
+        onRemoveBook = { book -> bookViewModel.remove(book) },
+        onNuevoAction = {bookViewModel.nuevoAction()},
         modifier = modifier
     )
 }
@@ -146,14 +144,15 @@ fun BookApp(
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BookScreen(
+fun BooksScreen(
     bookState: BookState,
     onNewBookTitleChange: (String) -> Unit,
     onNewBookAuthorChange: (String) -> Unit,
-    onAddBook: (String, String) -> Unit,
+    onAddBook: () -> Unit,
     onEditAction: (Book) -> Unit,
-    onUpdateBook: (Book, String, String) -> Unit,
+    onUpdateBook: () -> Unit,
     onRemoveBook: (Book) -> Unit,
+    onNuevoAction : () -> Unit,
     modifier: Modifier = Modifier,
 ) {
 
@@ -181,51 +180,62 @@ fun BookScreen(
 
 
                 ActionEnum.READ ->
-                    ShowBooks(
+                    BooksReadAction(
                         bookState = bookState,
-                        onAddBook = onAddBook,
                         onEditAction = onEditAction,
-                        onUpdateBook = onUpdateBook,
                         onRemoveBook = onRemoveBook,
+                        onNuevoAction = onNuevoAction,
                         modifier = modifier
                     )
 
-                ActionEnum.CREATE -> EditableBook(bookState = bookState, onNewBookTitleChange = onNewBookTitleChange, onNewBookAuthorChange = onNewBookAuthorChange, onAddBook = onAddBook, onUpdateBook = onUpdateBook)
-                ActionEnum.MODIFY -> EditableBook(bookState = bookState, onNewBookTitleChange = onNewBookTitleChange, onNewBookAuthorChange = onNewBookAuthorChange, onAddBook = onAddBook, onUpdateBook = onUpdateBook)
+                ActionEnum.CREATE -> BookEditableAction(
+                    bookState = bookState,
+                    onNewBookTitleChange = onNewBookTitleChange,
+                    onNewBookAuthorChange = onNewBookAuthorChange,
+                    onAddBook = onAddBook,
+                    onUpdateBook = onUpdateBook
+                )
+
+                ActionEnum.MODIFY -> BookEditableAction(
+                    bookState = bookState,
+                    onNewBookTitleChange = onNewBookTitleChange,
+                    onNewBookAuthorChange = onNewBookAuthorChange,
+                    onAddBook = onAddBook,
+                    onUpdateBook = onUpdateBook
+                )
             }
         }
     }
 
 
-
-
 }
+
 @Composable
-fun EditableBook(bookState: BookState,     onNewBookTitleChange: (String) -> Unit,
-                 onNewBookAuthorChange: (String) -> Unit,    onAddBook: (String, String) -> Unit, onUpdateBook: (Book, String, String) -> Unit,) {
-    CamposTexto(bookState.newBook, onNewBookTitleChange, onNewBookAuthorChange)
+fun BookEditableAction(
+    bookState: BookState, onNewBookTitleChange: (String) -> Unit,
+    onNewBookAuthorChange: (String) -> Unit, onAddBook: () -> Unit, onUpdateBook: () -> Unit,
+) {
+    Column {
+        CamposTexto(bookState.newBook, onNewBookTitleChange, onNewBookAuthorChange)
 
-
-    if (bookState.action == ActionEnum.CREATE) {
-        Button(
-            onClick = { onAddBook(bookState.newBook.title, bookState.newBook.author) },
-            modifier = Modifier.padding(top = 8.dp)
-        ) {
-            Text(stringResource(R.string.add_button))
+        if (bookState.action == ActionEnum.CREATE) {
+            Button(
+                onClick = { onAddBook() },
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                Text(stringResource(R.string.add_button))
+            }
         }
-    }
-    if (bookState.action == ActionEnum.MODIFY) {
-        Button(
-            onClick = {
-                onUpdateBook(
-                    bookState.newBook,
-                    bookState.newBook.title,
-                    bookState.newBook.author
-                )
-            },
-            modifier = Modifier.padding(top = 8.dp)
-        ) {
-            Text(stringResource(R.string.modify_button))
+        if (bookState.action == ActionEnum.MODIFY) {
+            Button(
+                onClick = {
+                    onUpdateBook(
+                    )
+                },
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                Text(stringResource(R.string.modify_button))
+            }
         }
     }
 }
@@ -238,42 +248,30 @@ fun IsLoading() {
 }
 
 @Composable
-fun ShowBooks(
+fun BooksReadAction(
     bookState: BookState,
-    onAddBook: (String, String) -> Unit,
     onEditAction: (Book) -> Unit,
-    onUpdateBook: (Book, String, String) -> Unit,
-    onRemoveBook: (Book) -> Unit, modifier: Modifier = Modifier,
+    onRemoveBook: (Book) -> Unit,
+    onNuevoAction: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        if (bookState.action == ActionEnum.CREATE) {
-            Button(
-                onClick = { onAddBook(bookState.newBook.title, bookState.newBook.author) },
-                modifier = Modifier.padding(top = 8.dp)
-            ) {
-                Text(stringResource(R.string.add_button))
-            }
-        }
-        if (bookState.action == ActionEnum.MODIFY) {
-            Button(
-                onClick = {
-                    onUpdateBook(
-                        bookState.newBook,
-                        bookState.newBook.title,
-                        bookState.newBook.author
-                    )
-                },
-                modifier = Modifier.padding(top = 8.dp)
-            ) {
-                Text(stringResource(R.string.modify_button))
-            }
-        }
+
         Spacer(modifier = Modifier.size(30.dp))
         BookList(
             list = bookState.books,
             onEditAction = { book -> onEditAction(book) },
-            onCloseBook = { book -> onRemoveBook(book) }
+            onRemoveBook = { book -> onRemoveBook(book) }
         )
+        Spacer(modifier = Modifier.weight(1f))
+        Button(
+            onClick =  onNuevoAction ,
+            modifier = Modifier
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                .fillMaxWidth()
+        ) {
+            Text(stringResource(R.string.add_button))
+        }
     }
 }
 
@@ -343,7 +341,7 @@ private fun CamposTexto(
 fun BookList(
     list: List<Book>,
     onEditAction: (Book) -> Unit,
-    onCloseBook: (Book) -> Unit,
+    onRemoveBook: (Book) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -356,7 +354,7 @@ fun BookList(
             BookItem(
                 book = book,
                 onModify = { onEditAction(book) },
-                onClose = { onCloseBook(book) }
+                onRemoveBook = { onRemoveBook(book) }
             )
             Divider()
         }
@@ -376,14 +374,14 @@ fun BookList(
  *
  * @param book libro a mostrar
  * @param onModify llamada cuando el usuario pulsa el botón de modificar un libro
- * @param onRemove llamada cuando el usuario pulsa el botón de eliminar un libro
+ * @param onRemoveBook llamada cuando el usuario pulsa el botón de eliminar un libro
  * @param modifier modifier para el composable
  */
 @Composable
 fun BookItem(
     book: Book,
     onModify: () -> Unit,
-    onClose: () -> Unit,
+    onRemoveBook: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -407,7 +405,7 @@ fun BookItem(
         IconButton(onClick = onModify) {
             Icon(Icons.Filled.Edit, contentDescription = "Modify")
         }
-        IconButton(onClick = onClose) {
+        IconButton(onClick = onRemoveBook) {
             Icon(Icons.Filled.Close, contentDescription = "Close")
         }
     }
@@ -418,24 +416,27 @@ fun BookItem(
 @Composable
 fun BookScreenPreview() {
     val newBook = Book(id = 0, title = "", author = "")
+    val bookViewModel = BookViewModel()
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
-        BookScreen(
+        BooksScreen(
             bookState = BookState(
                 books = books,
                 newBook = newBook,
                 action = ActionEnum.READ,
 
-            ),
-            onNewBookTitleChange = {},
-            onNewBookAuthorChange = {},
-            onAddBook = { _, _ -> },
-            onEditAction = {},
-            onUpdateBook = { _, _, _ -> },
-            onRemoveBook = {},
-
+                ),
+            onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
+            onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
+            onAddBook = { bookViewModel.add() },
+            onEditAction = { book -> bookViewModel.editAction(book) },
+            onUpdateBook = {
+                bookViewModel.updateBook()
+            },
+            onRemoveBook = { book -> bookViewModel.remove(book) },
+            onNuevoAction = {bookViewModel.nuevoAction()},
             )
     }
 }

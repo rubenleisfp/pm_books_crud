@@ -23,7 +23,7 @@ class BookViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy (action = ActionEnum.IS_LOADING)
             delay(3000)
-            _uiState.value = _uiState.value.copy(books = books, newBook = Book(0, "", ""), action = ActionEnum.READ)
+            _uiState.value = _uiState.value.copy(books = books, newBook = Book(1, "", ""), action = ActionEnum.READ)
         }
     }
 
@@ -37,26 +37,32 @@ class BookViewModel : ViewModel() {
     /**
      * Agrega un nuevo libro a la lista existente de libros
      */
-    fun add(newTitle: String, newAuthor: String) {
-        if (hasInputData(newTitle, newAuthor)) {
-            val newBook = Book(getNewId(),newTitle, newAuthor)
+    fun add() {
+        if (hasInputData(_uiState.value.newBook.title, _uiState.value.newBook.author)) {
+            val newBook = Book(getNewId(),_uiState.value.newBook.title, _uiState.value.newBook.author)
             val updatedBooks = _uiState.value.books + newBook
-            _uiState.value = _uiState.value.copy(books = updatedBooks, newBook = Book(0, "", ""))
+            _uiState.value = _uiState.value.copy(action = ActionEnum.READ, books = updatedBooks, newBook = Book(getNewId(), "", ""))
         }
     }
 
+
     /**
      * Actualiza la información de un libro en la lista de libros
-     * Recibe un libro y la nueva información que queremos establecer en dicho libro: titulo y autor
      */
-    fun updateText(book: Book, newTitle: String, newAuthor: String) {
-        if (hasInputData(newTitle, newAuthor)) {
+    fun updateBook() {
+        if (hasInputData(_uiState.value.newBook.title, _uiState.value.newBook.author)) {
             val updatedBooks = _uiState.value.books.map {
-                if (it.id == book.id) it.copy(title = newTitle, author = newAuthor)
+                if (it.id == _uiState.value.newBook.id) it.copy(title = _uiState.value.newBook.title, author = _uiState.value.newBook.author)
                 else it
             }
             _uiState.value = _uiState.value.copy(books = updatedBooks)
+            _uiState.value = _uiState.value.copy(action = ActionEnum.READ)
         }
+    }
+
+    fun nuevoAction() {
+        _uiState.value = _uiState.value.copy(action = ActionEnum.CREATE)
+
     }
 
     fun editAction(book: Book) {

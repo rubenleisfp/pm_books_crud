@@ -53,6 +53,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -355,33 +356,88 @@ fun BookItem(
     }
 }
 
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
 fun BookScreenPreview() {
     val newBook = Book(id = 0, title = "", author = "")
     val bookViewModel = BookViewModel()
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        BooksScreen(
+
+    BooksScreen(
+        bookState = BookState(
+            books = books,
+            newBook = newBook,
+            action = ActionEnum.READ,
+
+            ),
+        onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
+        onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
+        onAddBook = { bookViewModel.add() },
+        onEditAction = { book -> bookViewModel.editAction(book) },
+        onUpdateBook = {
+            bookViewModel.updateBook()
+        },
+        onRemoveBook = { book -> bookViewModel.remove(book) },
+        onNuevoAction = { bookViewModel.nuevoAction() },
+        onCancelAction = {bookViewModel.cancelAction()}
+    )
+}
+
+
+@Preview
+@Composable
+fun BookItemPreview() {
+    BooksTheme() {
+        BookItem(
+            book = Book(id = 1, title = "Sample Title", author = "Sample Author"),
+            onModify = {},
+            onRemoveBook = {},
+            modifier = Modifier.fillMaxWidth().background(Color.White)
+        )
+    }
+}
+
+@Preview
+@Composable
+fun BookListPreview() {
+    BooksTheme() {
+        BookList(
+            list = books,
+            onEditAction = {},
+            onRemoveBook = {},
+            modifier = Modifier.fillMaxWidth().background(Color.White)
+        )
+    }
+}
+
+@Preview
+@Composable
+fun CamposTextoPreview() {
+    BooksTheme() {
+        CamposTexto(
+            newBook = Book(id = 1, title = "Sample Title", author = "Sample Author"),
+            onNewBookTitleChange = {},
+            onNewBookAuthorChange = {},
+
+            )
+    }
+}
+
+@Preview
+@Composable
+fun BooksReadActionPreview() {
+    BooksTheme() {
+        BooksReadAction(
             bookState = BookState(
                 books = books,
-                newBook = newBook,
+                newBook = Book(id = 1, title = "Sample Title", author = "Sample Author"),
                 action = ActionEnum.READ,
-
-                ),
-            onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
-            onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
-            onAddBook = { bookViewModel.add() },
-            onEditAction = { book -> bookViewModel.editAction(book) },
-            onUpdateBook = {
-                bookViewModel.updateBook()
-            },
-            onRemoveBook = { book -> bookViewModel.remove(book) },
-            onNuevoAction = { bookViewModel.nuevoAction() },
-            onCancelAction = {bookViewModel.cancelAction()}
+            ),
+            onEditAction = {},
+            onRemoveBook = {},
+            onNuevoAction = {},
+            modifier = Modifier.fillMaxWidth().background(Color.White)
         )
     }
 }

@@ -105,9 +105,9 @@ fun BookApp(
         bookState = bookState,
         onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
         onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
-        onAddBook = { newTitle, newAuthor -> bookViewModel.add(newTitle, newAuthor) },
+        onAddBook = { bookViewModel.add() },
         onEditAction = { book -> bookViewModel.editAction(book) },
-        onUpdateBook = { book, newTitle, newAuthor -> bookViewModel.updateText(book, newTitle, newAuthor) },
+        onUpdateBook = { bookViewModel.updateText() },
         onRemoveBook = { bookViewModel.remove(it) },
         modifier = modifier
     )
@@ -139,9 +139,9 @@ fun BookScreen(
     bookState: BookState,
     onNewBookTitleChange: (String) -> Unit,
     onNewBookAuthorChange: (String) -> Unit,
-    onAddBook: (String, String) -> Unit,
+    onAddBook: () -> Unit,
     onEditAction: (Book) -> Unit,
-    onUpdateBook: (Book, String, String) -> Unit,
+    onUpdateBook: () -> Unit,
     onRemoveBook: (Book) -> Unit,
     modifier: Modifier = Modifier,
     ) {
@@ -156,7 +156,7 @@ fun BookScreen(
 
             if (bookState.action == ActionEnum.CREATE) {
                 Button(
-                    onClick = { onAddBook(bookState.newBook.title, bookState.newBook.author) },
+                    onClick = { onAddBook() },
                     modifier = Modifier.padding(top = 8.dp)
                 ) {
                 Text(stringResource(R.string.add_button))
@@ -164,7 +164,7 @@ fun BookScreen(
             }
             if (bookState.action == ActionEnum.MODIFY) {
                 Button(
-                    onClick = { onUpdateBook(bookState.newBook,bookState.newBook.title, bookState.newBook.author) },
+                    onClick = { onUpdateBook() },
                     modifier = Modifier.padding(top = 8.dp)
                 ) {
                     Text(stringResource(R.string.modify_button))
@@ -174,11 +174,10 @@ fun BookScreen(
             BookList(
                 list = bookState.books,
                 onEditAction = { book -> onEditAction(book) },
-                onCloseBook = { book -> onRemoveBook(book) }
+                onRemove = { book -> onRemoveBook(book) }
             )
         }
     }
-
 }
 
 /**
@@ -231,7 +230,7 @@ private fun CamposTexto(
 fun BookList(
     list: List<Book>,
     onEditAction: (Book) -> Unit,
-    onCloseBook: (Book) -> Unit,
+    onRemove: (Book) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -244,7 +243,7 @@ fun BookList(
             BookItem(
                 book = book,
                 onModify = {onEditAction(book)},
-                onClose = { onCloseBook(book) }
+                onRemove = { onRemove(book) }
             )
             Divider()
         }
@@ -263,7 +262,7 @@ fun BookList(
 fun BookItem(
     book: Book,
     onModify: () -> Unit,
-    onClose: () -> Unit,
+    onRemove: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(
@@ -287,7 +286,7 @@ fun BookItem(
         IconButton(onClick = onModify) {
             Icon(Icons.Filled.Edit, contentDescription = "Modify")
         }
-        IconButton(onClick = onClose) {
+        IconButton(onClick = onRemove) {
             Icon(Icons.Filled.Close, contentDescription = "Close")
         }
     }
@@ -297,6 +296,7 @@ fun BookItem(
 @Preview
 @Composable
 fun BookScreenPreview() {
+    val bookViewModel : BookViewModel = BookViewModel()
     val newBook = Book(id = 0, title = "", author = "")
     Surface(
         modifier = Modifier.fillMaxSize(),
@@ -304,13 +304,12 @@ fun BookScreenPreview() {
     ) {
         BookScreen(
             bookState = BookState(books = books, newBook = newBook, action = ActionEnum.CREATE, isLoading = false),
-            onNewBookTitleChange = {},
-            onNewBookAuthorChange = {},
-            onAddBook = {_,_->},
-            onEditAction = {},
-            onUpdateBook = { _, _, _ -> },
-            onRemoveBook = {},
-
+            onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
+            onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
+            onAddBook = { bookViewModel.add() },
+            onEditAction = { book -> bookViewModel.editAction(book) },
+            onUpdateBook = { bookViewModel.updateText() },
+            onRemoveBook = { bookViewModel.remove(it) }
         )
     }
 }

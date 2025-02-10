@@ -64,8 +64,6 @@ class BookViewModel : ViewModel() {
         }
     }
 
-
-
     /**
      * Prepara la creación de un nuevo libro.
      *

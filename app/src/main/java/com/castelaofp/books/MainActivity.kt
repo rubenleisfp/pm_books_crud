@@ -131,6 +131,9 @@ fun BookApp(
  * Desligada del viewModel para poder hacer previews de la pantalla.
  *
  * Tenemos varios modos de ver la UI (Steps)
+ * IS_LOADING:
+ * -Circulo de carga
+ *
  * READ:
  * -La lista con los libros incluidos hasta ahora
  * -El boton de añadir

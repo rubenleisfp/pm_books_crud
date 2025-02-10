@@ -77,7 +77,7 @@ class BookViewModel : ViewModel() {
     /**
      * Obtiene el siguiente id para asignarselo a un libro
      */
-    fun getNewId(): Int {
+    private fun getNewId(): Int {
         val lastId = _uiState.value.books.lastOrNull()?.id ?: 0
         return lastId + 1
     }

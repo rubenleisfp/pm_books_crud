@@ -151,8 +151,7 @@ fun BookScreen(
             CamposTexto(bookState, onAddBook, onNewBookTitleChange, onNewBookAuthorChange)
             Spacer(modifier = Modifier.size(30.dp))
             BookList(books = bookState.books, onUpdateBook =
-                onUpdateBook
-            , onRemoveBook = { book -> onRemoveBook(book) })
+            onUpdateBook, onRemoveBook = { book -> onRemoveBook(book) })
         }
     }
 
@@ -283,8 +282,7 @@ fun BookScreenPreview() {
             onNewBookTitleChange = { title -> bookViewModel.setNewBookTitle(title) },
             onNewBookAuthorChange = { author -> bookViewModel.setNewBookAuthor(author) },
             onAddBook = { bookViewModel.add() },
-            onUpdateBook = {
-                    book ->
+            onUpdateBook = { book ->
                 bookViewModel.updateBook(
                     book,
                 )

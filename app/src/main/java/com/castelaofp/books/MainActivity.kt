@@ -104,10 +104,8 @@ fun BookApp(
         onNewBookTitleChange = { title -> bookViewModel.setNewBookTitle(title) },
         onNewBookAuthorChange = { author -> bookViewModel.setNewBookAuthor(author) },
         onAddBook = { bookViewModel.add() },
-        onUpdateBook = { book, newTitle, newAuthor ->
-            bookViewModel.updateText(
-                book, newTitle, newAuthor
-            )
+        onUpdateBook = { book ->
+            bookViewModel.updateBook(book)
         },
         onRemoveBook = { bookViewModel.remove(it) },
         modifier = modifier
@@ -140,7 +138,7 @@ fun BookScreen(
     onNewBookTitleChange: (String) -> Unit,
     onNewBookAuthorChange: (String) -> Unit,
     onAddBook: () -> Unit,
-    onUpdateBook: (Book, String, String) -> Unit,
+    onUpdateBook: (Book) -> Unit,
     onRemoveBook: (Book) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -150,13 +148,11 @@ fun BookScreen(
         }
     } else {
         Column(modifier = modifier) {
-            CamposTexto(bookState.newBook, onAddBook, onNewBookTitleChange, onNewBookAuthorChange)
+            CamposTexto(bookState, onAddBook, onNewBookTitleChange, onNewBookAuthorChange)
             Spacer(modifier = Modifier.size(30.dp))
-            BookList(books = bookState.books, onModifyBook = { book ->
-                onUpdateBook(
-                    book, bookState.newBook.title, bookState.newBook.author
-                )
-            }, onRemoveBook = { book -> onRemoveBook(book) })
+            BookList(books = bookState.books, onUpdateBook =
+                onUpdateBook
+            , onRemoveBook = { book -> onRemoveBook(book) })
         }
     }
 
@@ -166,7 +162,7 @@ fun BookScreen(
  * Contiene los campos de texto titulo y autor, que el usuario usará para
  * dar el alta/actualizar un libro
  *
- * @param newBook libro que se va a dar de alta/actualizar
+ * @param bookState estado con el nuevo libro a agregar/editar y la lista de libros
  * @param onAddBook llamada cuando el usuario hacer click en añadir libro
  * @param onNewBookTitleChange llamada cuando el usuario cambia el titulo del libro
  * @param onNewBookAuthorChange llamada cuando el usuario cambia el autor del libro
@@ -174,14 +170,14 @@ fun BookScreen(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun CamposTexto(
-    newBook: Book,
+    bookState: BookState,
     onAddBook: () -> Unit,
     onNewBookTitleChange: (String) -> Unit,
     onNewBookAuthorChange: (String) -> Unit
 ) {
     Row {
         TextField(
-            value = newBook.title,
+            value = bookState.newBook.title,
             onValueChange = onNewBookTitleChange,
             singleLine = true,
             label = { Text(stringResource(R.string.input_titulo)) },
@@ -191,7 +187,7 @@ private fun CamposTexto(
         )
 
         TextField(
-            value = newBook.author,
+            value = bookState.newBook.author,
             onValueChange = onNewBookAuthorChange,
             singleLine = true,
             label = { Text(stringResource(R.string.input_author)) },
@@ -212,14 +208,14 @@ private fun CamposTexto(
  * Mostramos la lista de libros
  *
  * @param books lista de libros a mostrar
- * @param onModifyBook llamada cuando el usuario pulsa el botón de modificar un libro
+ * @param onUpdateBook llamada cuando el usuario pulsa el botón de modificar un libro
  * @param onRemoveBook llamada cuando el usuario pulsa el botón de borrar un libro
  * @param modifier modifier para el composable
  */
 @Composable
 fun BookList(
     books: List<Book>,
-    onModifyBook: (Book) -> Unit,
+    onUpdateBook: (Book) -> Unit,
     onRemoveBook: (Book) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -228,7 +224,7 @@ fun BookList(
     ) {
         items(items = books, key = { book -> book.id }) { book ->
             BookItem(book = book,
-                onModify = { onModifyBook(book) },
+                onUpdateBook = { onUpdateBook(book) },
                 onRemove = { onRemoveBook(book) })
             Divider()
         }
@@ -239,13 +235,13 @@ fun BookList(
  * Mostramos un elemento libro, con su titulo, autor y los iconos de accion
  *
  * @param book libro a mostrar
- * @param onModify llamada cuando el usuario pulsa el botón de modificar un libro
+ * @param onUpdateBook llamada cuando el usuario pulsa el botón de modificar un libro
  * @param onRemove llamada cuando el usuario pulsa el botón de eliminar un libro
  * @param modifier modifier para el composable
  */
 @Composable
 fun BookItem(
-    book: Book, onModify: () -> Unit, onRemove: () -> Unit, modifier: Modifier = Modifier
+    book: Book, onUpdateBook: () -> Unit, onRemove: () -> Unit, modifier: Modifier = Modifier
 ) {
     Row(
         modifier = modifier, verticalAlignment = Alignment.CenterVertically
@@ -264,7 +260,7 @@ fun BookItem(
             text = book.author,
 
             )
-        IconButton(onClick = onModify) {
+        IconButton(onClick = onUpdateBook) {
             Icon(Icons.Filled.Edit, contentDescription = "Modify")
         }
         IconButton(onClick = onRemove) {
@@ -287,9 +283,10 @@ fun BookScreenPreview() {
             onNewBookTitleChange = { title -> bookViewModel.setNewBookTitle(title) },
             onNewBookAuthorChange = { author -> bookViewModel.setNewBookAuthor(author) },
             onAddBook = { bookViewModel.add() },
-            onUpdateBook = { book, newTitle, newAuthor ->
-                bookViewModel.updateText(
-                    book, newTitle, newAuthor
+            onUpdateBook = {
+                    book ->
+                bookViewModel.updateBook(
+                    book,
                 )
             },
             onRemoveBook = { bookViewModel.remove(it) })

@@ -47,12 +47,13 @@ class BookViewModel : ViewModel() {
 
     /**
      * Actualiza la información de un libro en la lista de libros
-     * Recibe un libro y la nueva información que queremos establecer en dicho libro: titulo y autor
+     *
+     * @param book libro que deseamos modificar
      */
-    fun updateText(book: Book, newTitle: String, newAuthor: String) {
-        if (hasInputData(newTitle, newAuthor)) {
+    fun updateBook(book: Book) {
+        if (hasInputData(_uiState.value.newBook.title, _uiState.value.newBook.author)) {
             val updatedBooks = _uiState.value.books.map {
-                if (it.id == book.id) it.copy(title = newTitle, author = newAuthor)
+                if (it.id == book.id) it.copy(title = _uiState.value.newBook.title, author = _uiState.value.newBook.author)
                 else it
             }
             _uiState.value = _uiState.value.copy(books = updatedBooks)

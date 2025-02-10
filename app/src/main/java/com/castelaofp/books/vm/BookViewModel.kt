@@ -23,7 +23,7 @@ class BookViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy (isLoading=true)
             delay(3000)
-            _uiState.value = _uiState.value.copy(books = books, newBook = Book(0, "", ""), isLoading = false)
+            _uiState.value = _uiState.value.copy(books = books, newBook = Book(1, "", ""), isLoading = false)
         }
     }
 
@@ -37,11 +37,11 @@ class BookViewModel : ViewModel() {
     /**
      * Agrega un nuevo libro a la lista existente de libros
      */
-    fun add(newTitle: String, newAuthor: String) {
-        if (hasInputData(newTitle, newAuthor)) {
-            val newBook = Book(getNewId(),newTitle, newAuthor)
+    fun add() {
+        if (hasInputData(_uiState.value.newBook.title, _uiState.value.newBook.author)) {
+            val newBook = Book(getNewId(), _uiState.value.newBook.title, _uiState.value.newBook.author)
             val updatedBooks = _uiState.value.books + newBook
-            _uiState.value = _uiState.value.copy(books = updatedBooks, newBook = Book(0, "", ""))
+            _uiState.value = _uiState.value.copy(books = updatedBooks, newBook = Book(getNewId(), "", ""))
         }
     }
 

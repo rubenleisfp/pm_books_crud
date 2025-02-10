@@ -103,7 +103,7 @@ fun BookApp(
         bookState = bookState,
         onNewBookTitleChange = { title -> bookViewModel.setNewBookTitle(title) },
         onNewBookAuthorChange = { author -> bookViewModel.setNewBookAuthor(author) },
-        onAddBook = { newTitle, newAuthor -> bookViewModel.add(newTitle, newAuthor) },
+        onAddBook = { bookViewModel.add() },
         onUpdateBook = { book, newTitle, newAuthor ->
             bookViewModel.updateText(
                 book, newTitle, newAuthor
@@ -139,7 +139,7 @@ fun BookScreen(
     bookState: BookState,
     onNewBookTitleChange: (String) -> Unit,
     onNewBookAuthorChange: (String) -> Unit,
-    onAddBook: (String, String) -> Unit,
+    onAddBook: () -> Unit,
     onUpdateBook: (Book, String, String) -> Unit,
     onRemoveBook: (Book) -> Unit,
     modifier: Modifier = Modifier
@@ -150,13 +150,7 @@ fun BookScreen(
         }
     } else {
         Column(modifier = modifier) {
-            CamposTexto(bookState.newBook, onNewBookTitleChange, onNewBookAuthorChange)
-            Button(
-                onClick = { onAddBook(bookState.newBook.title, bookState.newBook.author) },
-                modifier = Modifier.padding(top = 8.dp)
-            ) {
-                Text(stringResource(R.string.add_button))
-            }
+            CamposTexto(bookState.newBook, onAddBook,onNewBookTitleChange, onNewBookAuthorChange)
             Spacer(modifier = Modifier.size(30.dp))
             BookList(books = bookState.books, onModifyBook = { book ->
                 onUpdateBook(
@@ -173,13 +167,14 @@ fun BookScreen(
  * dar el alta/actualizar un libro
  *
  * @param newBook libro que se va a dar de alta/actualizar
+ * @param onAddBook llamada cuando el usuario hacer click en añadir libro
  * @param onNewBookTitleChange llamada cuando el usuario cambia el titulo del libro
  * @param onNewBookAuthorChange llamada cuando el usuario cambia el autor del libro
  */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun CamposTexto(
-    newBook: Book, onNewBookTitleChange: (String) -> Unit, onNewBookAuthorChange: (String) -> Unit
+    newBook: Book, onAddBook: () -> Unit, onNewBookTitleChange: (String) -> Unit, onNewBookAuthorChange: (String) -> Unit
 ) {
     Row {
         TextField(
@@ -201,6 +196,12 @@ private fun CamposTexto(
                 .weight(1f)
                 .padding(8.dp)
         )
+    }
+    Button(
+        onClick = { onAddBook() },
+        modifier = Modifier.padding(top = 8.dp)
+    ) {
+        Text(stringResource(R.string.add_button))
     }
 }
 
@@ -280,7 +281,7 @@ fun BookScreenPreview() {
         BookScreen(bookState = bookState,
             onNewBookTitleChange = {},
             onNewBookAuthorChange = {},
-            onAddBook = { _, _ -> },
+            onAddBook = { -> },
             onUpdateBook = { _, _, _ -> },
             onRemoveBook = {})
     }

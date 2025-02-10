@@ -65,9 +65,12 @@ class BookViewModel : ViewModel() {
     }
 
 
+
     /**
-     * Inicializa los campos de edición para que el usuario pueda
-     * dar de alta un nuevo libro
+     * Prepara la creación de un nuevo libro.
+     *
+     * Al invocar esta función, se cambia el estado a CREATE para que el usuario pueda crear un nuevo libro.
+     * Se crea un nuevo libro con un id nuevo y se inicializan sus campos con cadenas vacías.
      */
     fun nuevoAction() {
         _uiState.value = _uiState.value.copy(action = ActionEnum.CREATE, newBook = Book(getNewId(), "", ""))

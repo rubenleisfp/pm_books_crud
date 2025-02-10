@@ -21,9 +21,9 @@ class BookViewModel : ViewModel() {
      */
     fun loadDefault() {
         viewModelScope.launch {
-            _uiState.value = _uiState.value.copy (isLoading=true)
+            _uiState.value = _uiState.value.copy (action = ActionEnum.IS_LOADING)
             delay(3000)
-            _uiState.value = _uiState.value.copy(books = books, newBook = Book(1, "", ""), isLoading = false)
+            _uiState.value = _uiState.value.copy(books = books, newBook = Book(1, "", ""), action = ActionEnum.CREATE)
         }
     }
 
@@ -47,9 +47,8 @@ class BookViewModel : ViewModel() {
 
     /**
      * Actualiza la información de un libro en la lista de libros
-     * Recibe un libro y la nueva información que queremos establecer en dicho libro: titulo y autor
      */
-    fun updateText() {
+    fun updateBook() {
         if (hasInputData(_uiState.value.newBook.title, _uiState.value.newBook.author)) {
             val updatedBooks = _uiState.value.books.map {
                 if (it.id == _uiState.value.newBook.id) it.copy(title = _uiState.value.newBook.title, author = _uiState.value.newBook.author)

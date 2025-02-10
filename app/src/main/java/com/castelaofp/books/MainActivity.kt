@@ -107,7 +107,7 @@ fun BookApp(
         onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
         onAddBook = { bookViewModel.add() },
         onEditAction = { book -> bookViewModel.editAction(book) },
-        onUpdateBook = { bookViewModel.updateText() },
+        onUpdateBook = { bookViewModel.updateBook() },
         onRemoveBook = { bookViewModel.remove(it) },
         modifier = modifier
     )
@@ -145,31 +145,13 @@ fun BookScreen(
     onRemoveBook: (Book) -> Unit,
     modifier: Modifier = Modifier,
     ) {
-    if (bookState.isLoading) {
+    if (bookState.action == ActionEnum.IS_LOADING) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
     } else {
         Column(modifier = modifier) {
-            CamposTexto(bookState.newBook, onNewBookTitleChange, onNewBookAuthorChange)
-
-
-            if (bookState.action == ActionEnum.CREATE) {
-                Button(
-                    onClick = { onAddBook() },
-                    modifier = Modifier.padding(top = 8.dp)
-                ) {
-                Text(stringResource(R.string.add_button))
-                }
-            }
-            if (bookState.action == ActionEnum.MODIFY) {
-                Button(
-                    onClick = { onUpdateBook() },
-                    modifier = Modifier.padding(top = 8.dp)
-                ) {
-                    Text(stringResource(R.string.modify_button))
-                }
-            }
+            CamposTexto(bookState, onAddBook, onUpdateBook, onNewBookTitleChange, onNewBookAuthorChange)
             Spacer(modifier = Modifier.size(30.dp))
             BookList(
                 list = bookState.books,
@@ -184,37 +166,59 @@ fun BookScreen(
  * Contiene los campos de texto titulo y autor, que el usuario usará para
  * dar el alta/actualizar un libro
  *
- * @param newBook libro que se va a dar de alta/actualizar
+ * @param bookState estado de la UI de mi app
+ * @param onAddBook llamada cuando el usuario pulsa el botón de agregar un nuevo libro
+ * @param onUpdateBook llamada cuando el usuario pulsa el botón de actualizar un libro
  * @param onNewBookTitleChange llamada cuando el usuario cambia el titulo del libro
  * @param onNewBookAuthorChange llamada cuando el usuario cambia el autor del libro
  */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun CamposTexto(
-    newBook: Book,
+    bookState: BookState,
+    onAddBook: () -> Unit,
+    onUpdateBook: () -> Unit,
     onNewBookTitleChange: (String) -> Unit,
     onNewBookAuthorChange: (String) -> Unit
 ) {
-    Row {
-        TextField(
-            value = newBook.title,
-            onValueChange = onNewBookTitleChange,
-            singleLine = true,
-            label = { Text(stringResource(R.string.input_titulo)) },
-            modifier = Modifier
-                .weight(1f)
-                .padding(8.dp)
-        )
+    Column() {
+        Row {
+            TextField(
+                value = bookState.newBook.title,
+                onValueChange = onNewBookTitleChange,
+                singleLine = true,
+                label = { Text(stringResource(R.string.input_titulo)) },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(8.dp)
+            )
 
-        TextField(
-            value = newBook.author,
-            onValueChange = onNewBookAuthorChange,
-            singleLine = true,
-            label = { Text(stringResource(R.string.input_author)) },
-            modifier = Modifier
-                .weight(1f)
-                .padding(8.dp)
-        )
+            TextField(
+                value = bookState.newBook.author,
+                onValueChange = onNewBookAuthorChange,
+                singleLine = true,
+                label = { Text(stringResource(R.string.input_author)) },
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(8.dp)
+            )
+        }
+        if (bookState.action == ActionEnum.CREATE) {
+            Button(
+                onClick = { onAddBook() },
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                Text(stringResource(R.string.add_button))
+            }
+        }
+        if (bookState.action == ActionEnum.MODIFY) {
+            Button(
+                onClick = { onUpdateBook() },
+                modifier = Modifier.padding(top = 8.dp)
+            ) {
+                Text(stringResource(R.string.modify_button))
+            }
+        }
     }
 }
 
@@ -303,12 +307,12 @@ fun BookScreenPreview() {
         color = MaterialTheme.colorScheme.background
     ) {
         BookScreen(
-            bookState = BookState(books = books, newBook = newBook, action = ActionEnum.CREATE, isLoading = false),
+            bookState = BookState(books = books, newBook = newBook, action = ActionEnum.CREATE),
             onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
             onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
             onAddBook = { bookViewModel.add() },
             onEditAction = { book -> bookViewModel.editAction(book) },
-            onUpdateBook = { bookViewModel.updateText() },
+            onUpdateBook = { bookViewModel.updateBook() },
             onRemoveBook = { bookViewModel.remove(it) }
         )
     }

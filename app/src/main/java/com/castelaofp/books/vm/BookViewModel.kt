@@ -60,14 +60,31 @@ class BookViewModel : ViewModel() {
         }
     }
 
+    /**
+     * Accion lanzada cuando el usuario pulsa sobre nuevo
+     */
     fun nuevoAction() {
         _uiState.value = _uiState.value.copy(action = ActionEnum.CREATE)
 
     }
 
+    /**
+     * Accion lanzada cuando el usuario pulsa sobre el icono de edicion
+     * Cambia la aplicacion a modo edicion
+     * Copia el libro seleccionado a las cajas de texto
+     */
     fun editAction(book: Book) {
         _uiState.value = _uiState.value.copy(action = ActionEnum.MODIFY)
         _uiState.value = _uiState.value.copy(newBook = book)
+    }
+
+    /**
+     * Accion lanzada cuando el usuario cancela
+     * desde el correspondiente boton cancelar
+     *
+     */
+    fun cancelAction() {
+        _uiState.value = _uiState.value.copy(action = ActionEnum.READ)
     }
 
     /**

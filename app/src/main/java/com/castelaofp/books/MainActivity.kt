@@ -117,8 +117,9 @@ fun BookApp(
             bookViewModel.updateBook()
         },
         onRemoveBook = { book -> bookViewModel.remove(book) },
-        onNuevoAction = {bookViewModel.nuevoAction()},
-        modifier = modifier
+        onNuevoAction = { bookViewModel.nuevoAction() },
+        onCancelAction = { bookViewModel.cancelAction() },
+        modifier = modifier,
     )
 }
 
@@ -157,8 +158,9 @@ fun BooksScreen(
     onEditAction: (Book) -> Unit,
     onUpdateBook: () -> Unit,
     onRemoveBook: (Book) -> Unit,
-    onNuevoAction : () -> Unit,
+    onNuevoAction: () -> Unit,
     modifier: Modifier = Modifier,
+    onCancelAction: () -> Unit,
 ) {
 
     Scaffold(topBar = {
@@ -198,7 +200,8 @@ fun BooksScreen(
                     onNewBookTitleChange = onNewBookTitleChange,
                     onNewBookAuthorChange = onNewBookAuthorChange,
                     onAddBook = onAddBook,
-                    onUpdateBook = onUpdateBook
+                    onUpdateBook = onUpdateBook,
+                    onCancelAction = onCancelAction
                 )
 
                 ActionEnum.MODIFY -> BookEditableAction(
@@ -206,13 +209,12 @@ fun BooksScreen(
                     onNewBookTitleChange = onNewBookTitleChange,
                     onNewBookAuthorChange = onNewBookAuthorChange,
                     onAddBook = onAddBook,
-                    onUpdateBook = onUpdateBook
+                    onUpdateBook = onUpdateBook,
+                    onCancelAction = onCancelAction
                 )
             }
         }
     }
-
-
 }
 
 /**
@@ -227,29 +229,40 @@ fun BooksScreen(
  */
 @Composable
 fun BookEditableAction(
-    bookState: BookState, onNewBookTitleChange: (String) -> Unit,
-    onNewBookAuthorChange: (String) -> Unit, onAddBook: () -> Unit, onUpdateBook: () -> Unit,
+    bookState: BookState,
+    onNewBookTitleChange: (String) -> Unit,
+    onNewBookAuthorChange: (String) -> Unit,
+    onAddBook: () -> Unit,
+    onUpdateBook: () -> Unit,
+    onCancelAction: () -> Unit,
 ) {
     Column {
         CamposTexto(bookState.newBook, onNewBookTitleChange, onNewBookAuthorChange)
-
-        if (bookState.action == ActionEnum.CREATE) {
-            Button(
-                onClick = { onAddBook() },
-                modifier = Modifier.padding(top = 8.dp)
-            ) {
-                Text(stringResource(R.string.add_button))
+        Row() {
+            if (bookState.action == ActionEnum.CREATE) {
+                Button(
+                    onClick = { onAddBook() },
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    Text(stringResource(R.string.add_button))
+                }
             }
-        }
-        if (bookState.action == ActionEnum.MODIFY) {
+            if (bookState.action == ActionEnum.MODIFY) {
+                Button(
+                    onClick = {
+                        onUpdateBook(
+                        )
+                    },
+                    modifier = Modifier.padding(top = 8.dp)
+                ) {
+                    Text(stringResource(R.string.modify_button))
+                }
+            }
             Button(
-                onClick = {
-                    onUpdateBook(
-                    )
-                },
+                onClick = onCancelAction,
                 modifier = Modifier.padding(top = 8.dp)
             ) {
-                Text(stringResource(R.string.modify_button))
+                Text(stringResource(R.string.cancel_button))
             }
         }
     }
@@ -295,7 +308,7 @@ fun BooksReadAction(
         )
         Spacer(modifier = Modifier.weight(1f))
         Button(
-            onClick =  onNuevoAction ,
+            onClick = onNuevoAction,
             modifier = Modifier
                 .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
                 .fillMaxWidth()
@@ -443,7 +456,8 @@ fun BookScreenPreview() {
                 bookViewModel.updateBook()
             },
             onRemoveBook = { book -> bookViewModel.remove(book) },
-            onNuevoAction = {bookViewModel.nuevoAction()},
-            )
+            onNuevoAction = { bookViewModel.nuevoAction() },
+            onCancelAction = {bookViewModel.cancelAction()}
+        )
     }
 }

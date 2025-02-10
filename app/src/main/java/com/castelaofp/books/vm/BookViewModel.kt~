@@ -31,55 +31,68 @@ class BookViewModel : ViewModel() {
      * Indica si los datos introducidos por el usuario tiene información o no
      */
     private fun hasInputData(newTitle: String, newAuthor: String): Boolean {
-        throw UnsupportedOperationException("A completar por el alumno")
+        return (newTitle.isNotEmpty() && newAuthor.isNotEmpty())
     }
 
     /**
      * Agrega un nuevo libro a la lista existente de libros
      */
     fun add() {
-        throw UnsupportedOperationException("A completar por el alumno")
+        if (hasInputData(_uiState.value.newBook.title, _uiState.value.newBook.author)) {
+            val newBook = Book(getNewId(),_uiState.value.newBook.title, _uiState.value.newBook.author)
+            val updatedBooks = _uiState.value.books + newBook
+            _uiState.value = _uiState.value.copy(books = updatedBooks, newBook = Book(getNewId(), "", ""))
+        }
     }
 
     /**
      * Actualiza la información de un libro en la lista de libros
      */
     fun updateBook() {
-        throw UnsupportedOperationException("A completar por el alumno")
+        if (hasInputData(_uiState.value.newBook.title, _uiState.value.newBook.author)) {
+            val updatedBooks = _uiState.value.books.map {
+                if (it.id == _uiState.value.newBook.id) it.copy(title = _uiState.value.newBook.title, author = _uiState.value.newBook.author)
+                else it
+            }
+            _uiState.value = _uiState.value.copy(books = updatedBooks)
+        }
     }
 
     /**
      * Cuando pulsa en editar se rellenan las cajas de texto con el valor del libro escogido
      */
     fun editAction(book: Book) {
-        throw UnsupportedOperationException("A completar por el alumno")
+        _uiState.value = _uiState.value.copy(action = ActionEnum.MODIFY)
+        _uiState.value = _uiState.value.copy(newBook = book)
     }
 
     /**
      * Actualizamos el titulo del libro introducido por teclado
      */
     fun setNewBookTitle(title: String) {
-        throw UnsupportedOperationException("A completar por el alumno")
+        _uiState.value = _uiState.value.copy(newBook = _uiState.value.newBook.copy(title = title))
     }
 
     /**
      *  Actualizamos el autor del libro introducido por teclado
      */
     fun setNewBookAuthor(author: String) {
-        throw UnsupportedOperationException("A completar por el alumno")
+        _uiState.value = _uiState.value.copy(newBook = _uiState.value.newBook.copy(author = author))
     }
 
     /**
      * Obtiene el siguiente id para asignarselo a un libro
      */
     private fun getNewId(): Int {
-        throw UnsupportedOperationException("A completar por el alumno")
+        val lastId = _uiState.value.books.lastOrNull()?.id ?: 0
+        return lastId + 1
     }
 
     /**
      * Borra el libro recibido como argumento de la lista
      */
     fun remove(book: Book) {
-        throw UnsupportedOperationException("A completar por el alumno")
+        val updatedBooks = _uiState.value.books.filterNot { it == book }
+        _uiState.value = _uiState.value.copy(books = updatedBooks)
     }
 }

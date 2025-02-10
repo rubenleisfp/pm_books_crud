@@ -219,7 +219,26 @@ fun BookItem(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        //TODO A completar por el alumno
+        Text(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 16.dp),
+            text = book.title,
+
+            )
+        Text(
+            modifier = Modifier
+                .weight(1f)
+                .padding(start = 16.dp),
+            text = book.author,
+
+            )
+        IconButton(onClick = onModify) {
+            Icon(Icons.Filled.Edit, contentDescription = "Modify")
+        }
+        IconButton(onClick = onRemove) {
+            Icon(Icons.Filled.Close, contentDescription = "Close")
+        }
     }
 }
 

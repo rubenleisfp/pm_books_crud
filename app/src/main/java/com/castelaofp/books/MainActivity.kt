@@ -129,10 +129,15 @@ fun BookApp(
  * de la info de un API
  * Desligada del viewModel para poder hacer previews de la pantalla.
  *
- * Mostramos:
- * -Las cajas de texto para crear/actualizar un nuevo libro
- * -El boton de añadir
+ * Tenemos varios modos de ver la UI (Steps)
+ * READ:
  * -La lista con los libros incluidos hasta ahora
+ * -El boton de añadir
+ *
+ * MODIFY/CREATE:
+ * -Vemos 2 cajas de texto, para ingresar el autor y titulo que queremos dar de alta
+ * o modificar
+ * -Debajo tendra botones de aceptar y cancelar
  *
  * @param bookState estado con la lista de libros y el nuevo libro
  * @param onNewBookTitleChange llamada cuando el usuario cambia el título del nuevo libro
@@ -160,7 +165,7 @@ fun BooksScreen(
         CenterAlignedTopAppBar(
             title = {
                 Text(
-                    text = "Cara o Cruz", fontWeight = FontWeight.Bold
+                    text = stringResource(R.string.app_name), fontWeight = FontWeight.Bold
                 )
             }, colors = TopAppBarDefaults.largeTopAppBarColors(
                 containerColor = MaterialTheme.colorScheme.primaryContainer
@@ -210,6 +215,16 @@ fun BooksScreen(
 
 }
 
+/**
+ * Muestra los campos de texto para que el usuario pueda editar un libro.
+ * Segun el estado de la app, se muestra un boton para dar de alta o modificar un libro
+ *
+ * @param bookState estado de la app
+ * @param onNewBookTitleChange llamada cuando el usuario cambia el titulo del libro
+ * @param onNewBookAuthorChange llamada cuando el usuario cambia el autor del libro
+ * @param onAddBook llamada cuando el usuario pulsa el boton de dar de alta
+ * @param onUpdateBook llamada cuando el usuario pulsa el boton de modificar
+ */
 @Composable
 fun BookEditableAction(
     bookState: BookState, onNewBookTitleChange: (String) -> Unit,
@@ -240,13 +255,28 @@ fun BookEditableAction(
     }
 }
 
+/**
+ * Muestra un CircularProgressIndicator en el centro de la pantalla,
+ * indicando que se esta cargando informacion.
+ */
 @Composable
 fun IsLoading() {
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
         CircularProgressIndicator()
     }
 }
-
+/**
+ * Contiene los botones de accion para la pantalla de lectura de los libros.
+ *
+ * En ella se encuentra un boton para agregar un nuevo libro
+ * y la lista de libros existentes con sus botones de editar y eliminar.
+ *
+ * @param bookState estado con la lista de libros y el libro a dar de alta/actualizar
+ * @param onEditAction llamada cuando el usuario pulsa el botón de editar un libro
+ * @param onRemoveBook llamada cuando el usuario pulsa el botón de eliminar un libro
+ * @param onNuevoAction llamada cuando el usuario pulsa el botón de agregar un nuevo libro
+ * @param modifier modifier para el composable
+ */
 @Composable
 fun BooksReadAction(
     bookState: BookState,
@@ -275,14 +305,7 @@ fun BooksReadAction(
     }
 }
 
-/**
- * Contiene los campos de texto titulo y autor, que el usuario usará para
- * dar el alta/actualizar un libro
- *
- * @param newBook libro que se va a dar de alta/actualizar
- * @param onNewBookTitleChange llamada cuando el usuario cambia el titulo del libro
- * @param onNewBookAuthorChange llamada cuando el usuario cambia el autor del libro
- */
+
 /**
  * Contiene los campos de texto titulo y autor, que el usuario usará para
  * dar el alta/actualizar un libro
@@ -329,14 +352,6 @@ private fun CamposTexto(
  * @param onRemoveBook llamada cuando el usuario pulsa el botón de borrar un libro
  * @param modifier modifier para el composable
  */
-/**
- * Mostramos la lista de libros
- *
- * @param books lista de libros a mostrar
- * @param onModifyBook llamada cuando el usuario pulsa el botón de modificar un libro
- * @param onRemoveBook llamada cuando el usuario pulsa el botón de borrar un libro
- * @param modifier modifier para el composable
- */
 @Composable
 fun BookList(
     list: List<Book>,
@@ -361,14 +376,6 @@ fun BookList(
     }
 }
 
-/**
- * Mostramos un elemento libro, con su titulo, autor y los iconos de accion
- *
- * @param book libro a mostrar
- * @param onModify llamada cuando el usuario pulsa el botón de modificar un libro
- * @param onRemove llamada cuando el usuario pulsa el botón de eliminar un libro
- * @param modifier modifier para el composable
- */
 /**
  * Mostramos un elemento libro, con su titulo, autor y los iconos de accion
  *

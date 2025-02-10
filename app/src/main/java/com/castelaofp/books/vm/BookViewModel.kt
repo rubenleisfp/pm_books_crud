@@ -51,20 +51,36 @@ class BookViewModel : ViewModel() {
      */
     fun updateBook() {
         if (hasInputData(_uiState.value.newBook.title, _uiState.value.newBook.author)) {
-            val updatedBooks = _uiState.value.books.map {
-                if (it.id == _uiState.value.newBook.id) it.copy(title = _uiState.value.newBook.title, author = _uiState.value.newBook.author)
-                else it
+            val updatedBooks = mutableListOf<Book>()
+            for (book in _uiState.value.books) {
+                if (book.id == _uiState.value.newBook.id) {
+                    updatedBooks.add(book.copy(title = _uiState.value.newBook.title, author = _uiState.value.newBook.author))
+                } else {
+                    updatedBooks.add(book)
+                }
             }
             _uiState.value = _uiState.value.copy(books = updatedBooks)
             _uiState.value = _uiState.value.copy(action = ActionEnum.READ)
         }
     }
 
-    fun nuevoAction() {
-        _uiState.value = _uiState.value.copy(action = ActionEnum.CREATE)
 
+    /**
+     * Inicializa los campos de edición para que el usuario pueda
+     * dar de alta un nuevo libro
+     */
+    fun nuevoAction() {
+        _uiState.value = _uiState.value.copy(action = ActionEnum.CREATE, newBook = Book(getNewId(), "", ""))
     }
 
+    /**
+     * Prepara la edición de un libro.
+     *
+     * Al recibir como parámetro el libro a editar, se copian sus datos en el nuevo libro
+     * y se cambia el estado a MODIFY para que el usuario pueda editar el libro.
+     *
+     * @param book libro que se va a editar
+     */
     fun editAction(book: Book) {
         _uiState.value = _uiState.value.copy(action = ActionEnum.MODIFY)
         _uiState.value = _uiState.value.copy(newBook = book)

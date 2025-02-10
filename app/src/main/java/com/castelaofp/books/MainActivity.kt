@@ -150,7 +150,7 @@ fun BookScreen(
         }
     } else {
         Column(modifier = modifier) {
-            CamposTexto(bookState.newBook, onAddBook,onNewBookTitleChange, onNewBookAuthorChange)
+            CamposTexto(bookState.newBook, onAddBook, onNewBookTitleChange, onNewBookAuthorChange)
             Spacer(modifier = Modifier.size(30.dp))
             BookList(books = bookState.books, onModifyBook = { book ->
                 onUpdateBook(
@@ -174,7 +174,10 @@ fun BookScreen(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 private fun CamposTexto(
-    newBook: Book, onAddBook: () -> Unit, onNewBookTitleChange: (String) -> Unit, onNewBookAuthorChange: (String) -> Unit
+    newBook: Book,
+    onAddBook: () -> Unit,
+    onNewBookTitleChange: (String) -> Unit,
+    onNewBookAuthorChange: (String) -> Unit
 ) {
     Row {
         TextField(
@@ -274,15 +277,21 @@ fun BookItem(
 @Preview
 @Composable
 fun BookScreenPreview() {
+    val bookViewModel: BookViewModel = BookViewModel()
     val bookState = BookState(emptyList(), Book(0, title = "", author = ""))
     Surface(
         modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background
     ) {
-        BookScreen(bookState = bookState,
-            onNewBookTitleChange = {},
-            onNewBookAuthorChange = {},
-            onAddBook = { -> },
-            onUpdateBook = { _, _, _ -> },
-            onRemoveBook = {})
+        BookScreen(
+            bookState = bookState,
+            onNewBookTitleChange = { title -> bookViewModel.setNewBookTitle(title) },
+            onNewBookAuthorChange = { author -> bookViewModel.setNewBookAuthor(author) },
+            onAddBook = { bookViewModel.add() },
+            onUpdateBook = { book, newTitle, newAuthor ->
+                bookViewModel.updateText(
+                    book, newTitle, newAuthor
+                )
+            },
+            onRemoveBook = { bookViewModel.remove(it) })
     }
 }

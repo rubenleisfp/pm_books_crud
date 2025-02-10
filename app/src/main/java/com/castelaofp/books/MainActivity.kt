@@ -142,18 +142,7 @@ fun BookScreen(
     onRemoveBook: (Book) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (bookState.isLoading) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-    } else {
-        Column(modifier = modifier) {
-            CamposTexto(bookState, onAddBook, onNewBookTitleChange, onNewBookAuthorChange)
-            Spacer(modifier = Modifier.size(30.dp))
-            BookList(books = bookState.books, onUpdateBook =
-            onUpdateBook, onRemoveBook = { book -> onRemoveBook(book) })
-        }
-    }
+    //TODO A completar por el alumno
 
 }
 
@@ -174,33 +163,7 @@ private fun CamposTexto(
     onNewBookTitleChange: (String) -> Unit,
     onNewBookAuthorChange: (String) -> Unit
 ) {
-    Row {
-        TextField(
-            value = bookState.newBook.title,
-            onValueChange = onNewBookTitleChange,
-            singleLine = true,
-            label = { Text(stringResource(R.string.input_titulo)) },
-            modifier = Modifier
-                .weight(1f)
-                .padding(8.dp)
-        )
-
-        TextField(
-            value = bookState.newBook.author,
-            onValueChange = onNewBookAuthorChange,
-            singleLine = true,
-            label = { Text(stringResource(R.string.input_author)) },
-            modifier = Modifier
-                .weight(1f)
-                .padding(8.dp)
-        )
-    }
-    Button(
-        onClick = { onAddBook() },
-        modifier = Modifier.padding(top = 8.dp)
-    ) {
-        Text(stringResource(R.string.add_button))
-    }
+    //TODO A completar por el alumno
 }
 
 /**
@@ -221,12 +184,7 @@ fun BookList(
     LazyColumn(
         modifier = modifier
     ) {
-        items(items = books, key = { book -> book.id }) { book ->
-            BookItem(book = book,
-                onUpdateBook = { onUpdateBook(book) },
-                onRemove = { onRemoveBook(book) })
-            Divider()
-        }
+        //TODO A completar por el alumno
     }
 }
 
@@ -245,26 +203,7 @@ fun BookItem(
     Row(
         modifier = modifier, verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 16.dp),
-            text = book.title,
-
-            )
-        Text(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 16.dp),
-            text = book.author,
-
-            )
-        IconButton(onClick = onUpdateBook) {
-            Icon(Icons.Filled.Edit, contentDescription = "Modify")
-        }
-        IconButton(onClick = onRemove) {
-            Icon(Icons.Filled.Close, contentDescription = "Close")
-        }
+    //TODO A completar por el alumno
     }
 }
 

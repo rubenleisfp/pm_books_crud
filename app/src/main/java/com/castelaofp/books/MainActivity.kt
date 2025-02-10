@@ -240,34 +240,7 @@ fun BookEditableAction(
     onCancelAction: () -> Unit,
 ) {
     Column {
-        CamposTexto(bookState.newBook, onNewBookTitleChange, onNewBookAuthorChange)
-        Row() {
-            if (bookState.action == ActionEnum.CREATE) {
-                Button(
-                    onClick = { onAddBook() },
-                    modifier = Modifier.padding(top = 8.dp)
-                ) {
-                    Text(stringResource(R.string.add_button))
-                }
-            }
-            if (bookState.action == ActionEnum.MODIFY) {
-                Button(
-                    onClick = {
-                        onUpdateBook(
-                        )
-                    },
-                    modifier = Modifier.padding(top = 8.dp)
-                ) {
-                    Text(stringResource(R.string.modify_button))
-                }
-            }
-            Button(
-                onClick = onCancelAction,
-                modifier = Modifier.padding(top = 8.dp)
-            ) {
-                Text(stringResource(R.string.cancel_button))
-            }
-        }
+       //TODO a implementar por el alumno
     }
 }
 
@@ -302,22 +275,7 @@ fun BooksReadAction(
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-
-        Spacer(modifier = Modifier.size(30.dp))
-        BookList(
-            list = bookState.books,
-            onEditAction = { book -> onEditAction(book) },
-            onRemoveBook = { book -> onRemoveBook(book) }
-        )
-        Spacer(modifier = Modifier.weight(1f))
-        Button(
-            onClick = onNuevoAction,
-            modifier = Modifier
-                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
-                .fillMaxWidth()
-        ) {
-            Text(stringResource(R.string.acept_button))
-        }
+        //TODO a implementar por el alumno
     }
 }
 
@@ -338,25 +296,7 @@ private fun CamposTexto(
     onNewBookAuthorChange: (String) -> Unit
 ) {
     Row {
-        TextField(
-            value = newBook.title,
-            onValueChange = onNewBookTitleChange,
-            singleLine = true,
-            label = { Text(stringResource(R.string.input_titulo)) },
-            modifier = Modifier
-                .weight(1f)
-                .padding(8.dp)
-        )
-
-        TextField(
-            value = newBook.author,
-            onValueChange = onNewBookAuthorChange,
-            singleLine = true,
-            label = { Text(stringResource(R.string.input_author)) },
-            modifier = Modifier
-                .weight(1f)
-                .padding(8.dp)
-        )
+        //TODO a implementar por el alumno
     }
 }
 
@@ -411,26 +351,7 @@ fun BookItem(
         modifier = modifier,
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Text(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 16.dp),
-            text = book.title,
-
-            )
-        Text(
-            modifier = Modifier
-                .weight(1f)
-                .padding(start = 16.dp),
-            text = book.author,
-
-            )
-        IconButton(onClick = onModify) {
-            Icon(Icons.Filled.Edit, contentDescription = "Modify")
-        }
-        IconButton(onClick = onRemoveBook) {
-            Icon(Icons.Filled.Close, contentDescription = "Close")
-        }
+        //TODO a implementar por el alumno
     }
 }
 

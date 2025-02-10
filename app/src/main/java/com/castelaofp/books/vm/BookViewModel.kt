@@ -31,18 +31,14 @@ class BookViewModel : ViewModel() {
      * Indica si los datos introducidos por el usuario tiene información o no
      */
     private fun hasInputData(newTitle: String, newAuthor: String): Boolean {
-        return (newTitle.isNotEmpty() && newAuthor.isNotEmpty())
+        throw UnsupportedOperationException("A implementar por el alumno")
     }
 
     /**
      * Agrega un nuevo libro a la lista existente de libros
      */
     fun add() {
-        if (hasInputData(_uiState.value.newBook.title, _uiState.value.newBook.author)) {
-            val newBook = Book(getNewId(),_uiState.value.newBook.title, _uiState.value.newBook.author)
-            val updatedBooks = _uiState.value.books + newBook
-            _uiState.value = _uiState.value.copy(action = ActionEnum.READ, books = updatedBooks, newBook = Book(getNewId(), "", ""))
-        }
+        throw UnsupportedOperationException("A implementar por el alumno")
     }
 
 
@@ -50,18 +46,7 @@ class BookViewModel : ViewModel() {
      * Actualiza la información de un libro en la lista de libros
      */
     fun updateBook() {
-        if (hasInputData(_uiState.value.newBook.title, _uiState.value.newBook.author)) {
-            val updatedBooks = mutableListOf<Book>()
-            for (book in _uiState.value.books) {
-                if (book.id == _uiState.value.newBook.id) {
-                    updatedBooks.add(book.copy(title = _uiState.value.newBook.title, author = _uiState.value.newBook.author))
-                } else {
-                    updatedBooks.add(book)
-                }
-            }
-            _uiState.value = _uiState.value.copy(books = updatedBooks)
-            _uiState.value = _uiState.value.copy(action = ActionEnum.READ)
-        }
+       throw UnsupportedOperationException("A implementar por el alumno")
     }
 
     /**
@@ -71,7 +56,7 @@ class BookViewModel : ViewModel() {
      * Se crea un nuevo libro con un id nuevo y se inicializan sus campos con cadenas vacías.
      */
     fun nuevoAction() {
-        _uiState.value = _uiState.value.copy(action = ActionEnum.CREATE, newBook = Book(getNewId(), "", ""))
+        throw UnsupportedOperationException("A implementar por el alumno")
     }
 
     /**
@@ -81,7 +66,7 @@ class BookViewModel : ViewModel() {
      * y se borra el libro que se estaba creando o editando.
      */
     fun cancelAction() {
-        _uiState.value = _uiState.value.copy(action = ActionEnum.READ)
+        throw UnsupportedOperationException("A implementar por el alumno")
     }
 
     /**
@@ -93,22 +78,21 @@ class BookViewModel : ViewModel() {
      * @param book libro que se va a editar
      */
     fun editAction(book: Book) {
-        _uiState.value = _uiState.value.copy(action = ActionEnum.MODIFY)
-        _uiState.value = _uiState.value.copy(newBook = book)
+        throw UnsupportedOperationException("A implementar por el alumno")
     }
 
     /**
      * Actualizamos el titulo del libro introducido por teclado
      */
     fun setNewBookTitle(title: String) {
-        _uiState.value = _uiState.value.copy(newBook = _uiState.value.newBook.copy(title = title))
+        throw UnsupportedOperationException("A implementar por el alumno")
     }
 
     /**
      *  Actualizamos el autor del libro introducido por teclado
      */
     fun setNewBookAuthor(author: String) {
-        _uiState.value = _uiState.value.copy(newBook = _uiState.value.newBook.copy(author = author))
+        throw UnsupportedOperationException("A implementar por el alumno")
     }
 
     /**
@@ -123,7 +107,6 @@ class BookViewModel : ViewModel() {
      * Borra el libro recibido como argumento de la lista
      */
     fun remove(book: Book) {
-        val updatedBooks = _uiState.value.books.filterNot { it == book }
-        _uiState.value = _uiState.value.copy(books = updatedBooks)
+        throw UnsupportedOperationException("A implementar por el alumno")
     }
 }

@@ -1,8 +1,8 @@
-package com.castelaofp.books.vm
+package com.castelaofp.books.ui.theme.screens.book
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.castelaofp.books.repository.Datasource
+import com.castelaofp.books.data.repository.Datasource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

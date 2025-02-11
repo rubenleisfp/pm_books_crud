@@ -1,6 +1,6 @@
-package com.castelaofp.books.repository
+package com.castelaofp.books.data.repository
 
-import com.castelaofp.books.vm.Book
+import com.castelaofp.books.ui.theme.screens.book.Book
 
 /**
  * Created by Your name on 11/02/2025.

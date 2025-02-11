@@ -290,6 +290,8 @@ fun IsLoading() {
  * En ella se encuentra un boton para agregar un nuevo libro
  * y la lista de libros existentes con sus botones de editar y eliminar.
  *
+ * En la parte superior se encuentra un campo de búsqueda para filtrar por autor o titulo
+ *
  * @param bookState estado con la lista de libros y el libro a dar de alta/actualizar
  * @param onEditAction llamada cuando el usuario pulsa el botón de editar un libro
  * @param onRemoveBook llamada cuando el usuario pulsa el botón de eliminar un libro

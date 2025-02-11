@@ -8,6 +8,9 @@ Con respecto a la rama edit_action, tendremos varios modos para visualizar la in
 ### READ
 En el modo READ, se muestra una lista de libros con sus detalles.
 
+En la parte superior se encuentra un campo de búsqueda para filtrar por una palabra
+que esté contenida en el titulo o el autor
+
 Al pulsar sobre el icono editar, nos dirige al modo modify, se copian los campos del elemento seleccionado
 a las cajas de texto (titulo y autor) 
 

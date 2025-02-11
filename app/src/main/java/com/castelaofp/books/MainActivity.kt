@@ -43,6 +43,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -289,16 +290,25 @@ fun IsLoading() {
  * @param onNuevoAction llamada cuando el usuario pulsa el botón de agregar un nuevo libro
  * @param modifier modifier para el composable
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BooksReadAction(
     bookState: BookState,
     onEditAction: (Book) -> Unit,
     onRemoveBook: (Book) -> Unit,
     onNuevoAction: () -> Unit,
+    onSearch:(String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-
+        OutlinedTextField(
+            value = bookState.searchWord,
+            onValueChange = onSearch,
+            label = { Text(stringResource(R.string.search_bar)) },
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+        )
         Spacer(modifier = Modifier.size(30.dp))
         BookList(
             list = bookState.books,

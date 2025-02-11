@@ -59,12 +59,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.castelaofp.books.repository.Datasource
 import com.castelaofp.books.ui.theme.BooksTheme
 import com.castelaofp.books.vm.ActionEnum
 import com.castelaofp.books.vm.Book
 import com.castelaofp.books.vm.BookState
 import com.castelaofp.books.vm.BookViewModel
-import com.castelaofp.books.vm.books
 
 
 /**
@@ -116,7 +116,8 @@ fun BookApp(
         onRemoveBook = { book -> bookViewModel.remove(book) },
         onNuevoAction = { bookViewModel.nuevoAction() },
         onCancelAction = { bookViewModel.cancelAction() },
-        modifier = modifier,
+        onSearchAction = {searchWord: String -> bookViewModel.searchAction(searchWord)},
+        modifier = modifier
     )
 }
 
@@ -132,6 +133,7 @@ fun BookApp(
  * -Circulo de carga
  *
  * READ:
+ * -Contiene un campo de búsqueda para filtrar por autor o titulo
  * -La lista con los libros incluidos hasta ahora
  * -El boton de añadir
  *
@@ -146,6 +148,7 @@ fun BookApp(
  * @param onAddBook llamada cuando el usuario pulsa el botón de agregar un nuevo libro
  * @param onUpdateBook llamada cuando el usuario pulsa el botón de actualizar un libro
  * @param onRemoveBook llamada cuando el usuario pulsa el botón de borrar un libro
+ * @param onSearchAction llamada cuando el usuario pulsa el botón de buscar un libro
  * @param modifier modifier para el composable
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -159,8 +162,10 @@ fun BooksScreen(
     onUpdateBook: () -> Unit,
     onRemoveBook: (Book) -> Unit,
     onNuevoAction: () -> Unit,
-    modifier: Modifier = Modifier,
     onCancelAction: () -> Unit,
+    onSearchAction: (searchWord: String) -> Unit,
+    modifier: Modifier = Modifier,
+
 ) {
 
     Scaffold(topBar = {
@@ -192,6 +197,7 @@ fun BooksScreen(
                         onEditAction = onEditAction,
                         onRemoveBook = onRemoveBook,
                         onNuevoAction = onNuevoAction,
+                        onSearchAction = onSearchAction,
                         modifier = modifier
                     )
 
@@ -288,6 +294,7 @@ fun IsLoading() {
  * @param onEditAction llamada cuando el usuario pulsa el botón de editar un libro
  * @param onRemoveBook llamada cuando el usuario pulsa el botón de eliminar un libro
  * @param onNuevoAction llamada cuando el usuario pulsa el botón de agregar un nuevo libro
+ * @param onSearchAction llamada cuando el usuario pulsa el botón de buscar un libro
  * @param modifier modifier para el composable
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -297,18 +304,20 @@ fun BooksReadAction(
     onEditAction: (Book) -> Unit,
     onRemoveBook: (Book) -> Unit,
     onNuevoAction: () -> Unit,
-    onSearch:(String) -> Unit,
+    onSearchAction:(String) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
-        OutlinedTextField(
-            value = bookState.searchWord,
-            onValueChange = onSearch,
-            label = { Text(stringResource(R.string.search_bar)) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        )
+        Row {
+            OutlinedTextField(
+                value = bookState.searchWord,
+                onValueChange = onSearchAction,
+                label = { Text(stringResource(R.string.search_bar)) },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
+        }
         Spacer(modifier = Modifier.size(30.dp))
         BookList(
             list = bookState.books,
@@ -326,7 +335,6 @@ fun BooksReadAction(
         }
     }
 }
-
 
 /**
  * Contiene los campos de texto titulo y autor, que el usuario usará para
@@ -449,10 +457,10 @@ fun BookScreenPreview() {
 
     BooksScreen(
         bookState = BookState(
-            books = books,
+            books = Datasource().getBooks(),
             newBook = newBook,
             action = ActionEnum.READ,
-
+            searchWord = ""
             ),
         onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
         onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
@@ -463,7 +471,8 @@ fun BookScreenPreview() {
         },
         onRemoveBook = { book -> bookViewModel.remove(book) },
         onNuevoAction = { bookViewModel.nuevoAction() },
-        onCancelAction = {bookViewModel.cancelAction()}
+        onCancelAction = {bookViewModel.cancelAction()},
+        onSearchAction = {searchWord ->  bookViewModel.searchAction(searchWord)}
     )
 }
 
@@ -486,7 +495,7 @@ fun BookItemPreview() {
 fun BookListPreview() {
     BooksTheme() {
         BookList(
-            list = books,
+            list =  Datasource().getBooks(),
             onEditAction = {},
             onRemoveBook = {},
             modifier = Modifier.fillMaxWidth().background(Color.White)
@@ -513,13 +522,15 @@ fun BooksReadActionPreview() {
     BooksTheme() {
         BooksReadAction(
             bookState = BookState(
-                books = books,
+                books =  Datasource().getBooks(),
                 newBook = Book(id = 1, title = "Sample Title", author = "Sample Author"),
                 action = ActionEnum.READ,
+                searchWord = ""
             ),
             onEditAction = {},
             onRemoveBook = {},
             onNuevoAction = {},
+            onSearchAction = {},
             modifier = Modifier.fillMaxWidth().background(Color.White)
         )
     }
@@ -531,9 +542,10 @@ fun BooksEditableActionPreview() {
     BooksTheme {
         BookEditableAction(
             bookState = BookState(
-                books = books,
+                books =  Datasource().getBooks(),
                 newBook = Book(id = 1, title = "Sample Title", author = "Sample Author"),
                 action = ActionEnum.CREATE,
+                searchWord = ""
             ),
             onNewBookTitleChange = {},
             onNewBookAuthorChange = {},

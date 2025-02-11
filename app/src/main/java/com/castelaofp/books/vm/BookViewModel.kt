@@ -2,6 +2,7 @@ package com.castelaofp.books.vm
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.castelaofp.books.repository.Datasource
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -23,7 +24,7 @@ class BookViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy (action = ActionEnum.IS_LOADING)
             delay(3000)
-            _uiState.value = _uiState.value.copy(books = books, newBook = Book(1, "", ""), action = ActionEnum.READ)
+            _uiState.value = _uiState.value.copy(books = Datasource().getBooks(), newBook = Book(1, "", ""), action = ActionEnum.READ)
         }
     }
 
@@ -125,5 +126,20 @@ class BookViewModel : ViewModel() {
     fun remove(book: Book) {
         val updatedBooks = _uiState.value.books.filterNot { it == book }
         _uiState.value = _uiState.value.copy(books = updatedBooks)
+    }
+
+
+    /**
+     * Busca un libro cuyo autor o titulo contenga la palabra recibida
+     * como argumento.
+     * Recarga el UIState con la lista de libros que encajan con el criterio
+     * de busqueda
+     */
+    fun searchAction(searchWord: String) {
+
+        val books = Datasource().getBooks().filter { book -> book.title.contains(searchWord, ignoreCase = true) || book.author.contains(searchWord, ignoreCase = true) }
+        _uiState.value = _uiState.value.copy(searchWord = searchWord)
+        _uiState.value = _uiState.value.copy(books = books)
+
     }
 }

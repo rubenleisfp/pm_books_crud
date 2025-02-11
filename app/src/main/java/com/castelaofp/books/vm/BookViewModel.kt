@@ -56,6 +56,7 @@ class BookViewModel : ViewModel() {
             }
             _uiState.value = _uiState.value.copy(books = updatedBooks)
         }
+        _uiState.value = _uiState.value.copy(action = ActionEnum.CREATE)
     }
 
     /**

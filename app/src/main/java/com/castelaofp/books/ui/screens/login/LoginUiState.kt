@@ -1,4 +1,4 @@
-package com.castelaofp.books.ui.theme.screens.login
+package com.castelaofp.books.ui.screens.login
 
 
 
@@ -8,7 +8,7 @@ package com.castelaofp.books.ui.theme.screens.login
  */
 data class LoginUiState (
     val loginEnable : Boolean = false,
-    val loginMessage : String = "",
+    val isValidLogin : LoginValidEnum = LoginValidEnum.NA,
     val loginChecked: Boolean = false,
     val loginData: LoginData = LoginData("","")
 )

@@ -1,4 +1,4 @@
-package com.castelaofp.books.ui.theme.screens.book
+package com.castelaofp.books.ui.screens.book
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -38,6 +38,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import com.castelaofp.books.R
 import com.castelaofp.books.data.repository.Datasource
 import com.castelaofp.books.ui.theme.BooksTheme
@@ -59,12 +60,14 @@ import com.castelaofp.books.ui.theme.BooksTheme
  * @bookViewModel viewModel que contiene toda la logica del app
  */
 @Composable
-fun BookApp(
+fun BookScreen(
+    navController: NavController,
     bookViewModel: BookViewModel,
     modifier: Modifier = Modifier
 ) {
     val bookState by bookViewModel.uiState.collectAsState()
-    BooksScreen(
+
+    BooksScaffold(
         bookState = bookState,
         onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
         onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
@@ -113,7 +116,7 @@ fun BookApp(
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BooksScreen(
+fun BooksScaffold(
     bookState: BookState,
     onNewBookTitleChange: (String) -> Unit,
     onNewBookAuthorChange: (String) -> Unit,
@@ -418,7 +421,7 @@ fun BookScreenPreview() {
     val newBook = Book(id = 0, title = "", author = "")
     val bookViewModel = BookViewModel()
 
-    BooksScreen(
+    BooksScaffold(
         bookState = BookState(
             books = Datasource().getBooks(),
             newBook = newBook,

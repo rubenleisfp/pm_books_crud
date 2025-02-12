@@ -1,13 +1,8 @@
-package com.castelaofp.books.ui.theme.screens.login
+package com.castelaofp.books.ui.screens.login
 
 import android.util.Log
 import android.util.Patterns
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import com.castelaofp.books.ui.theme.screens.login.LoginData
-import com.castelaofp.books.ui.theme.screens.login.LoginUiState
 
 
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -29,7 +24,8 @@ class LoginViewModel : ViewModel() {
 
     /**
      * Actualiza el valor de loginData con los valores recibidos como argumento
-     * Si son validos actualza el valor de loginEnable en el UIState
+     * Si son validos actualiza el valor de loginEnable en el UIState
+     * Como el usuario esta haciendo cambios en su login, reseteamos la variable isValidLogin a NA
      */
     fun onLoginChanged(email: String, password: String) {
         //TODO:
@@ -42,13 +38,13 @@ class LoginViewModel : ViewModel() {
         val newLoginData = LoginData(email, password)
         val areFieldsValid = isValidEmail(email) && isValidPassword(password)
         Log.d(TAG_LOG, "areFieldsValid $areFieldsValid")
-        _uiState.update { currentState -> currentState.copy(loginEnable = areFieldsValid, loginData = newLoginData) }
+        _uiState.update { currentState -> currentState.copy(loginEnable = areFieldsValid, loginData = newLoginData, isValidLogin = LoginValidEnum.NA   ) }
     }
 
     /**
-     * Indica si es valor el password, longitud mayor de 6
+     * Indica si es valor el password, longitud mayor de 3
      */
-    private fun isValidPassword(password: String): Boolean = password.length > 6
+    private fun isValidPassword(password: String): Boolean = password.length > 2
 
     /**
      * Indica si es valido el email
@@ -59,38 +55,26 @@ class LoginViewModel : ViewModel() {
     /**
      * Se invoca cuando el usuario hace click en login
      * Comprueba que el login sea valido, es decir, que las credenciales sean Ok
-     * Actualiza el UIState con el mensaje de login "Ok /Incorrecto".
-     * Actualiza tambien la variable loginChecked a true para que la vista sepa que hacer
+     * Actualiza el UIState indicando si fue valido o no el login.
      */
-    fun onLoginSelected() {
-        //1.- Comprobar si el login fue correcto o no y en consecuencia rellenar el loginMessage
-        //2.- Actualizar el valor de loginChecked
+    fun onLoginSelected(): LoginValidEnum {
+        //1.- Comprobar si el login fue correcto o no y actualizar el UIState
         Log.d(TAG_LOG, "OnLoginSelected")
 
-        var loginMessage = "Login Ok"
-        if (!isValidLogin()) {
-            loginMessage = "Login incorrecto, revise las credenciales"
-        }
+        val isValidLogin = isValidLogin()
+        val validLoginEnum = if (isValidLogin) LoginValidEnum.OK else LoginValidEnum.KO
         //Se hará recompose por haber cambiado el uiState
         _uiState.update { currentState ->
-            currentState.copy(loginChecked = true).copy(loginMessage = loginMessage)
+            currentState.copy(isValidLogin = validLoginEnum)
         }
+        return validLoginEnum
     }
 
     /**
-     * Actualizamos en el UI State loginChecked a false
-     */
-    fun onToastShowed() {
-        //Una vez lanzado el toast quitamos el flag para mostrarlo
-        _uiState.update { currentState -> currentState.copy(loginChecked = false) }
-    }
-
-    /**
-     * Valida que el email sea a@b.com y el password 12345678
+     * Valida que el email sea a@b.com y el password 123
      */
     private fun isValidLogin(): Boolean {
-        var isValidLogin: Boolean = false
-        isValidLogin = (_uiState.value.loginData.email == "a@b.com") && (_uiState.value.loginData.password == "12345678")
+        val isValidLogin = (_uiState.value.loginData.email == "a@b.com") && (_uiState.value.loginData.password == "123")
         return isValidLogin
     }
 }

@@ -7,6 +7,7 @@
     <string name="acept_button">Añadir</string>
     <string name="cancel_button">Cancelar</string>
     <string name="search_bar">Titulo o autor a buscar</string>
-    <string name="login">Iniciar sesión</string>
+    <string name="login_button">Iniciar sesión</string>
+    <string name="msg_invalid_login">Login incorrecto</string>
     <string name="forgot_password">¿Olvidaste tu contraseña?</string>
 </resources>

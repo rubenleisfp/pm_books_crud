@@ -20,11 +20,10 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.viewModels
+import com.castelaofp.books.navigation.NavigationStack
 import com.castelaofp.books.ui.theme.BooksTheme
-import com.castelaofp.books.ui.theme.screens.book.BookApp
-import com.castelaofp.books.ui.theme.screens.book.BookViewModel
-import com.castelaofp.books.ui.theme.screens.login.LoginScreen
-import com.castelaofp.books.ui.theme.screens.login.LoginViewModel
+import com.castelaofp.books.ui.screens.book.BookViewModel
+import com.castelaofp.books.ui.screens.login.LoginViewModel
 
 
 /**
@@ -40,9 +39,12 @@ class MainActivity : ComponentActivity() {
 
         setContent {
             BooksTheme() {
-                // A surface container using the 'background' color from the theme
-                //BookApp(bookViewModel)
-                LoginScreen(loginViewModel)
+                /**
+                 * NavigationStack es una funcion que define la navegacion entre pantallas.
+                 * La navegacion se define como una serie de pantallas que se pueden navegar
+                 * con el boton de navegacion.
+                 */
+                NavigationStack()
             }
         }
     }

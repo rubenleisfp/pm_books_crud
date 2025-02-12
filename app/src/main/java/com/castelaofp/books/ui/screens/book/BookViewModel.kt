@@ -1,4 +1,4 @@
-package com.castelaofp.books.ui.theme.screens.book
+package com.castelaofp.books.ui.screens.book
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

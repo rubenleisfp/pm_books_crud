@@ -1,4 +1,4 @@
-package com.castelaofp.books.ui.theme.screens.login
+package com.castelaofp.books.ui.screens.login
 
 import android.content.Context
 import android.util.Log
@@ -15,7 +15,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -32,9 +31,10 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.castelaofp.books.R
-
-
+import com.castelaofp.books.navigation.Screen
 
 
 /**
@@ -43,80 +43,73 @@ import com.castelaofp.books.R
  * se habilita el boton de login
  *
  * Cuando el usuario pulsa sobre el boton de login se comprueba que las credenciales
- * introducidas son correctas (a@b.com / 12345678)
+ * introducidas son correctas (a@b.com / 123)
  *
  * Inmediatamente se muestra un toast indicando si fueron correctas o no las credenciales
  *
- * Created by Your name on 11/01/2024.
+ *
  */
 
 const val TAG_LOG: String = "LoginScreen"
 
 @Composable
-fun LoginScreen(viewModel: LoginViewModel) {
-    //TODO
-    //1. Obtener el loginUiState con toda la información de la pantalla
-    //2. Crear un box que ocupe toda la pantalla con un padding de 16.dp
-    //3. Dentro del box, se llamara al Login con toda la informacion requerida
-    val loginUiSate by viewModel.uiState.collectAsState()
+fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
+    val loginUiState by loginViewModel.uiState.collectAsState()
+    LoginForm(
+        loginUiState = loginUiState,
+        onLoginChanged = { login: String, password: String ->
+            loginViewModel.onLoginChanged(
+                login,
+                password
+            )
+        },
+        onLoginSelected = { loginViewModel.onLoginSelected() },
+        navController = navController,
+    )
+}
+
+/**
+ * Representa el formulario de login
+ * el cual esta contenida dentro de un box
+ *
+ * @loginUiState contiene los datos del estado
+ * @onLoginChanged accion que se lanza cuando cambia algun valor del password o email
+ * @onLoginSelected accion que se lanza al enviar el formulario
+ * @navController para navegar entre pantallas
+ * de sesion
+ */
+@Composable
+fun LoginForm(
+    loginUiState: LoginUiState,
+    onLoginChanged: (String, String) -> Unit,
+    onLoginSelected: () -> LoginValidEnum,
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
     Box(
         Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
-        Login(
-            Modifier.align(Alignment.Center),
-            viewModel,
-            loginUiSate.loginData,
-            loginUiSate.loginEnable,
-            loginUiSate.loginMessage,
-            loginUiSate.loginChecked
-        )
-    }
-}
-
-/**
- * Representa toda la pantalla de login
- *
- * @viewModel viewModel con la información del controlador
- * @loginData contiene los datos del formulario: email y contraseña
- * @loginEnable sirve para indicar si hay que habilitar el boton de inicio de sesion
- * @loginMessage mensaje a mostrar al usuario una vez que ha iniciado sesion
- * @loginChecked util para mostrar y ocultar el toast que muestra el mensaje ok/ko de inicio
- * de sesion
- */
-@Composable
-fun Login(
-    modifier: Modifier,
-    viewModel: LoginViewModel,
-    loginData: LoginData,
-    loginEnable: Boolean,
-    loginMessage: String,
-    loginChecked: Boolean
-) {
-    //TODO
-    //1.- Definir un mContext para el Toast: val mContext = LocalContext.current
-    //2.- Definir una columna con los siguientes elementos: HeaderImage, EmailField, PasswordField, ForgotPassword, LoginButton
-    //3.- Si se hizo login, habra que mostrar el toast y llamar al metodo onToasteShowed del viewModel
-    // para hacer que desaparezca de nuestra vista una vez se ha mostrado
-    val mContext = LocalContext.current
-
-    Column(modifier = modifier) {
-        HeaderImage(Modifier.align(Alignment.CenterHorizontally))
-        Spacer(modifier = Modifier.padding(16.dp))
-        EmailField(loginData) { viewModel.onLoginChanged(it, loginData.password) }
-        Spacer(modifier = Modifier.padding(16.dp))
-        PasswordField(loginData) { viewModel.onLoginChanged(loginData.email, it) }
-        ForgotPassword(Modifier.align(Alignment.End))
-        Spacer(modifier = Modifier.padding(16.dp))
-        LoginButton(loginEnable, { viewModel.onLoginSelected() })
-        //Si el usuario hizo login, mostramos el mensaje en un toast. El mensaje mostrar si fue correcto o no el login
-        if (loginChecked) {
-            mToast(mContext, loginMessage)
-            viewModel.onToastShowed()
+        //TODO
+        //1.- Definir una columna con los siguientes elementos: HeaderImage, EmailField, PasswordField, ForgotPassword, LoginButton
+        Column(modifier = modifier) {
+            HeaderImage(Modifier.align(Alignment.CenterHorizontally))
+            Spacer(modifier = Modifier.padding(16.dp))
+            EmailField(
+                loginUiState.loginData,
+                { email -> onLoginChanged(email, loginUiState.loginData.password) })
+            Spacer(modifier = Modifier.padding(16.dp))
+            PasswordField(
+                loginUiState.loginData,
+                { password -> onLoginChanged(loginUiState.loginData.email, password) })
+            ForgotPassword(Modifier.align(Alignment.End))
+            Spacer(modifier = Modifier.padding(16.dp))
+            LoginButton(loginUiState, onLoginSelected, navController = navController)
         }
     }
 }
+
 
 /**
  * Representa el logo de la pantalla de login
@@ -132,36 +125,52 @@ fun HeaderImage(modifier: Modifier) {
     )
 }
 
+
+/**
+ * Representa el boton de login
+ *
+ * @loginEnable boolean para habilitar el boton cuando los campos cumpla con los
+ * requisitos exigidos
+ * @onLoginSelected evento del VM que se lanzara al hacer click en login
+ */
+@Composable
+fun LoginButton(
+    loginUiState: LoginUiState,
+    onLoginSelected: () -> LoginValidEnum,
+    navController: NavController
+) {
+    //TODO
+    //1. Crear un boton. Cuando se hace click se llamara a onLoginSelected.
+    // Solo estara habilitado cuando lo diga LoginEnable
+    // Si el login fue OK, entonces debemos redirir a la pantalla de libros
+    //2. Proporciona los estilos que gustes a los botones
+    //3. Mostrar un toast indicando si el login fue incorrecto
+    Button(
+        onClick = {
+            Log.d(TAG_LOG, "Onclick")
+            val loginValidEnum = onLoginSelected()
+            if (loginValidEnum == LoginValidEnum.OK) {
+                navController.navigate(Screen.Books.route)
+            }
+        }, modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp), colors = ButtonDefaults.buttonColors(
+            contentColor = Color.White,
+            disabledContentColor = Color.White,
+        ), enabled = loginUiState.loginEnable
+    ) {
+        Text(stringResource(R.string.login_button))
+    }
+    if (loginUiState.isValidLogin == LoginValidEnum.KO) {
+        mToast(LocalContext.current, (stringResource(R.string.msg_invalid_login)))
+    }
+}
+
 /**
  * Funcion generica para mostrar informacion de un toast
  */
 private fun mToast(context: Context, message: String) {
     Toast.makeText(context, message, Toast.LENGTH_LONG).show()
-}
-
-/**
- * Representa el boton de login
- *
- * @loginEnable sirve para habilitar el boton cuando los campos cumpla con los
- * requisitos exigidos
- * @onLoginSelected evento del VM que se lanzara al hacer click en login
- */
-@Composable
-fun LoginButton(loginEnable: Boolean, onLoginSelected: () -> Unit) {
-    //TODO
-    //1. Crear un boton. Cuando se hace click se llamara a onLoginSelected. Solo estara habilitado cuando lo diga LoginEnable
-    //2. Proporciona los estilos que gustes a los botones
-    Button(onClick = {
-        Log.d(TAG_LOG, "Onclick")
-        onLoginSelected()
-    }, modifier = Modifier
-        .fillMaxWidth()
-        .height(48.dp), colors = ButtonDefaults.buttonColors(
-        contentColor = Color.White,
-        disabledContentColor = Color.White,
-    ), enabled = loginEnable) {
-        Text(stringResource(R.string.login))
-    }
 }
 
 /**
@@ -172,7 +181,7 @@ fun ForgotPassword(modifier: Modifier) {
     //TODO
     //1.- Caja de texto con olvidaste contraseña pero sin accion asociada
     Text(
-        text =  stringResource(R.string.forgot_password),
+        text = stringResource(R.string.forgot_password),
         modifier = modifier.clickable { },
         fontSize = 12.sp,
         fontWeight = FontWeight.Bold,
@@ -209,8 +218,6 @@ fun EmailField(loginData: LoginData, onLoginChanged: (String) -> Unit) {
             unfocusedIndicatorColor = Color.Transparent
         )
     )
-
-
 }
 
 /**
@@ -244,11 +251,31 @@ fun PasswordField(loginData: LoginData, onLoginChanged: (String) -> Unit) {
     )
 }
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 @Preview(showBackground = true, showSystemUi = true)
 fun LoginScreenPreview() {
     val viewModel = LoginViewModel()
-    LoginScreen(viewModel)
+    val navController = rememberNavController()
+    LoginScreen(navController, viewModel)
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+@Preview(showBackground = true, showSystemUi = true)
+fun LoginAppPreview() {
+    val loginViewModel = LoginViewModel()
+    val navController = rememberNavController()
+    val loginUiState by loginViewModel.uiState.collectAsState()
+    LoginForm(
+        loginUiState = loginUiState,
+        onLoginChanged = { login: String, password: String ->
+            loginViewModel.onLoginChanged(
+                login,
+                password
+            )
+        },
+        onLoginSelected = { loginViewModel.onLoginSelected() },
+        navController = navController
+    )
 }

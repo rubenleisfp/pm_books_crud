@@ -1,4 +1,4 @@
-package com.castelaofp.books.ui.theme.screens.book
+package com.castelaofp.books.ui.screens.book
 
 /**
  * Created by Your name on 02/06/2024.

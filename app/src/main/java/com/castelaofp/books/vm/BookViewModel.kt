@@ -85,7 +85,7 @@ class BookViewModel : ViewModel() {
     /**
      * Borra el libro recibido como argumento de la lista
      */
-    fun remove(book: Book) {
+    fun removeBook(book: Book) {
         val updatedBooks = _uiState.value.books.filterNot { it == book }
         _uiState.value = _uiState.value.copy(books = updatedBooks)
     }

@@ -107,7 +107,7 @@ fun BookApp(
         onUpdateBook = { book ->
             bookViewModel.updateBook(book)
         },
-        onRemoveBook = { bookViewModel.remove(it) },
+        onRemoveBook = { bookViewModel.removeBook(it) },
         modifier = modifier
     )
 }
@@ -287,6 +287,6 @@ fun BookScreenPreview() {
                     book,
                 )
             },
-            onRemoveBook = { bookViewModel.remove(it) })
+            onRemoveBook = { bookViewModel.removeBook(it) })
     }
 }

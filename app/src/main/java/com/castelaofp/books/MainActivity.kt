@@ -105,10 +105,10 @@ fun BookApp(
         bookState = bookState,
         onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
         onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
-        onAddBook = { bookViewModel.add() },
+        onAddBook = { bookViewModel.addBook() },
         onEditAction = { book -> bookViewModel.editAction(book) },
         onUpdateBook = { bookViewModel.updateBook() },
-        onRemoveBook = { bookViewModel.remove(it) },
+        onRemoveBook = { bookViewModel.removeBook(it) },
         modifier = modifier
     )
 }
@@ -182,15 +182,15 @@ private fun CamposTexto(
  * Mostramos la lista de libros
  *
  * @param books lista de libros a mostrar
- * @param onModifyBook llamada cuando el usuario pulsa el botón de modificar un libro
+ * @param onEditAction llamada cuando el usuario pulsa el botón de modificar un libro
  * @param onRemoveBook llamada cuando el usuario pulsa el botón de borrar un libro
  * @param modifier modifier para el composable
  */
 @Composable
 fun BookList(
-    list: List<Book>,
+    books: List<Book>,
     onEditAction: (Book) -> Unit,
-    onRemove: (Book) -> Unit,
+    onRemoveBook: (Book) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -237,10 +237,10 @@ fun BookScreenPreview() {
             bookState = BookState(books = books, newBook = newBook, action = ActionEnum.CREATE),
             onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
             onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
-            onAddBook = { bookViewModel.add() },
+            onAddBook = { bookViewModel.addBook() },
             onEditAction = { book -> bookViewModel.editAction(book) },
             onUpdateBook = { bookViewModel.updateBook() },
-            onRemoveBook = { bookViewModel.remove(it) }
+            onRemoveBook = { bookViewModel.removeBook(it) }
         )
     }
 }

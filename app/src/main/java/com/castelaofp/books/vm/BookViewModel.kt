@@ -37,7 +37,7 @@ class BookViewModel : ViewModel() {
     /**
      * Agrega un nuevo libro a la lista existente de libros
      */
-    fun add() {
+    fun addBook() {
         throw UnsupportedOperationException("A completar por el alumno")
     }
 
@@ -74,7 +74,7 @@ class BookViewModel : ViewModel() {
     /**
      * Borra el libro recibido como argumento de la lista
      */
-    fun remove(book: Book) {
+    fun removeBook(book: Book) {
         throw UnsupportedOperationException("A completar por el alumno")
     }
 }

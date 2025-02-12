@@ -103,11 +103,11 @@ fun BookApp(
         bookState = bookState,
         onNewBookTitleChange = { title -> bookViewModel.setNewBookTitle(title) },
         onNewBookAuthorChange = { author -> bookViewModel.setNewBookAuthor(author) },
-        onAddBook = { bookViewModel.add() },
+        onAddBook = { bookViewModel.addBook() },
         onUpdateBook = { book ->
             bookViewModel.updateBook(book)
         },
-        onRemoveBook = { bookViewModel.remove(it) },
+        onRemoveBook = { bookViewModel.removeBook(it) },
         modifier = modifier
     )
 }
@@ -226,6 +226,6 @@ fun BookScreenPreview() {
                     book,
                 )
             },
-            onRemoveBook = { bookViewModel.remove(it) })
+            onRemoveBook = { bookViewModel.removeBook(it) })
     }
 }

@@ -93,20 +93,6 @@ fun LoginForm(
     ) {
         //TODO
         //1.- Definir una columna con los siguientes elementos: HeaderImage, EmailField, PasswordField, ForgotPassword, LoginButton
-        Column(modifier = modifier) {
-            HeaderImage(Modifier.align(Alignment.CenterHorizontally))
-            Spacer(modifier = Modifier.padding(16.dp))
-            EmailField(
-                loginUiState.loginData,
-                { email -> onLoginChanged(email, loginUiState.loginData.password) })
-            Spacer(modifier = Modifier.padding(16.dp))
-            PasswordField(
-                loginUiState.loginData,
-                { password -> onLoginChanged(loginUiState.loginData.email, password) })
-            ForgotPassword(Modifier.align(Alignment.End))
-            Spacer(modifier = Modifier.padding(16.dp))
-            LoginButton(loginUiState, onLoginSelected, navController = navController)
-        }
     }
 }
 
@@ -116,8 +102,6 @@ fun LoginForm(
  */
 @Composable
 fun HeaderImage(modifier: Modifier) {
-    //TODO
-    //1.- Mostrar la imagen que guste en tu app
     Image(
         painter = painterResource(id = R.drawable.atom),
         contentDescription = "Header",
@@ -145,25 +129,7 @@ fun LoginButton(
     // Si el login fue OK, entonces debemos redirir a la pantalla de libros
     //2. Proporciona los estilos que gustes a los botones
     //3. Mostrar un toast indicando si el login fue incorrecto
-    Button(
-        onClick = {
-            Log.d(TAG_LOG, "Onclick")
-            val loginValidEnum = onLoginSelected()
-            if (loginValidEnum == LoginValidEnum.OK) {
-                navController.navigate(Screen.Books.route)
-            }
-        }, modifier = Modifier
-            .fillMaxWidth()
-            .height(48.dp), colors = ButtonDefaults.buttonColors(
-            contentColor = Color.White,
-            disabledContentColor = Color.White,
-        ), enabled = loginUiState.loginEnable
-    ) {
-        Text(stringResource(R.string.login_button))
-    }
-    if (loginUiState.isValidLogin == LoginValidEnum.KO) {
-        mToast(LocalContext.current, (stringResource(R.string.msg_invalid_login)))
-    }
+
 }
 
 /**
@@ -200,10 +166,6 @@ fun ForgotPassword(modifier: Modifier) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun EmailField(loginData: LoginData, onLoginChanged: (String) -> Unit) {
-    //TODO
-    //1.- Crear un TextField para el email, cada vez que cambie el valor del TextField, se llamara a onLoginChanged
-    //2.- Aplicar la estetica visual que gustes
-    //https://stackoverflow.com/questions/67320990/android-jetpack-compose-cant-set-backgroundcolor-for-outlinedtextfield
     TextField(
         value = loginData.email, onValueChange = onLoginChanged,
         modifier = Modifier.fillMaxWidth(),
@@ -231,8 +193,6 @@ fun EmailField(loginData: LoginData, onLoginChanged: (String) -> Unit) {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PasswordField(loginData: LoginData, onLoginChanged: (String) -> Unit) {
-    //1.- Crear un TextField para el password, cada vez que cambie el valor del TextField, se llamara a onLoginChanged
-    //2.- Aplicar la estetica visual que gustes
     var password by remember { mutableStateOf("") }
     //https://stackoverflow.com/questions/67320990/android-jetpack-compose-cant-set-backgroundcolor-for-outlinedtextfield
     TextField(

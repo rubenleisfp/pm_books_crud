@@ -44,7 +44,7 @@ class MainActivity : ComponentActivity() {
                  * La navegacion se define como una serie de pantallas que se pueden navegar
                  * con el boton de navegacion.
                  */
-                NavigationStack()
+                //TODO LLamar a NavigationStack
             }
         }
     }

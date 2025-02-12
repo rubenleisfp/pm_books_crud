@@ -103,12 +103,14 @@ fun BookApp(
     val bookState by bookViewModel.uiState.collectAsState()
     BookScreen(
         bookState = bookState,
-        onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
+        onNewBookTitleChange = { title -> bookViewModel.setNewBookTitle(title) },
+        //Equivalente a esto cuando solo tiene un parametro la lambda
+        //onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
         onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
-        onAddBook = { bookViewModel.add() },
+        onAddBook = { bookViewModel.addBook() },
         onEditAction = { book -> bookViewModel.editAction(book) },
         onUpdateBook = { bookViewModel.updateBook() },
-        onRemoveBook = { bookViewModel.remove(it) },
+        onRemoveBook = { bookViewModel.removeBook(it) },
         modifier = modifier
     )
 }
@@ -154,9 +156,9 @@ fun BookScreen(
             CamposTexto(bookState, onAddBook, onUpdateBook, onNewBookTitleChange, onNewBookAuthorChange)
             Spacer(modifier = Modifier.size(30.dp))
             BookList(
-                list = bookState.books,
+                books = bookState.books,
                 onEditAction = { book -> onEditAction(book) },
-                onRemove = { book -> onRemoveBook(book) }
+                onRemoveBook = { book -> onRemoveBook(book) }
             )
         }
     }
@@ -226,28 +228,28 @@ private fun CamposTexto(
  * Mostramos la lista de libros
  *
  * @param books lista de libros a mostrar
- * @param onModifyBook llamada cuando el usuario pulsa el botón de modificar un libro
+ * @param onEditAction llamada cuando el usuario pulsa el botón de modificar un libro
  * @param onRemoveBook llamada cuando el usuario pulsa el botón de borrar un libro
  * @param modifier modifier para el composable
  */
 @Composable
 fun BookList(
-    list: List<Book>,
+    books: List<Book>,
     onEditAction: (Book) -> Unit,
-    onRemove: (Book) -> Unit,
+    onRemoveBook: (Book) -> Unit,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
         modifier = modifier
     ) {
         items(
-            items = list,
+            items = books,
             key = { book -> book.id }
         ) { book ->
             BookItem(
                 book = book,
                 onModify = {onEditAction(book)},
-                onRemove = { onRemove(book) }
+                onRemove = { onRemoveBook(book) }
             )
             Divider()
         }
@@ -310,10 +312,10 @@ fun BookScreenPreview() {
             bookState = BookState(books = books, newBook = newBook, action = ActionEnum.CREATE),
             onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
             onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
-            onAddBook = { bookViewModel.add() },
+            onAddBook = { bookViewModel.addBook() },
             onEditAction = { book -> bookViewModel.editAction(book) },
             onUpdateBook = { bookViewModel.updateBook() },
-            onRemoveBook = { bookViewModel.remove(it) }
+            onRemoveBook = { bookViewModel.removeBook(it) }
         )
     }
 }

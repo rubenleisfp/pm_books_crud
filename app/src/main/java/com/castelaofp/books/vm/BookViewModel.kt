@@ -37,7 +37,7 @@ class BookViewModel : ViewModel() {
     /**
      * Agrega un nuevo libro a la lista existente de libros
      */
-    fun add() {
+    fun addBook() {
         if (hasInputData(_uiState.value.newBook.title, _uiState.value.newBook.author)) {
             val newBook = Book(getNewId(), _uiState.value.newBook.title, _uiState.value.newBook.author)
             val updatedBooks = _uiState.value.books + newBook

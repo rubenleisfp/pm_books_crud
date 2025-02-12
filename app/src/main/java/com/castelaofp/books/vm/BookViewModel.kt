@@ -37,7 +37,7 @@ class BookViewModel : ViewModel() {
     /**
      * Agrega un nuevo libro a la lista existente de libros
      */
-    fun add() {
+    fun addBook() {
         throw UnsupportedOperationException("A implementar por el alumno")
     }
 
@@ -55,7 +55,7 @@ class BookViewModel : ViewModel() {
      * Al invocar esta función, se cambia el estado a CREATE para que el usuario pueda crear un nuevo libro.
      * Se crea un nuevo libro con un id nuevo y se inicializan sus campos con cadenas vacías.
      */
-    fun nuevoAction() {
+    fun addAction() {
         throw UnsupportedOperationException("A implementar por el alumno")
     }
 
@@ -106,7 +106,7 @@ class BookViewModel : ViewModel() {
     /**
      * Borra el libro recibido como argumento de la lista
      */
-    fun remove(book: Book) {
+    fun removeBook(book: Book) {
         throw UnsupportedOperationException("A implementar por el alumno")
     }
 }

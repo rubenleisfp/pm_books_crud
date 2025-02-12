@@ -112,13 +112,13 @@ fun BookApp(
         bookState = bookState,
         onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
         onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
-        onAddBook = { bookViewModel.add() },
+        onAddBook = { bookViewModel.addBook() },
         onEditAction = { book -> bookViewModel.editAction(book) },
         onUpdateBook = {
             bookViewModel.updateBook()
         },
-        onRemoveBook = { book -> bookViewModel.remove(book) },
-        onNuevoAction = { bookViewModel.nuevoAction() },
+        onRemoveBook = { book -> bookViewModel.removeBook(book) },
+        onAddAction = { bookViewModel.addAction() },
         onCancelAction = { bookViewModel.cancelAction() },
         modifier = modifier,
     )
@@ -150,6 +150,7 @@ fun BookApp(
  * @param onAddBook llamada cuando el usuario pulsa el botón de agregar un nuevo libro
  * @param onUpdateBook llamada cuando el usuario pulsa el botón de actualizar un libro
  * @param onRemoveBook llamada cuando el usuario pulsa el botón de borrar un libro
+ * @param onAddAction llamada cuando el usuario pulsa el botón de nuevo libro
  * @param modifier modifier para el composable
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -162,7 +163,7 @@ fun BooksScreen(
     onEditAction: (Book) -> Unit,
     onUpdateBook: () -> Unit,
     onRemoveBook: (Book) -> Unit,
-    onNuevoAction: () -> Unit,
+    onAddAction: () -> Unit,
     modifier: Modifier = Modifier,
     onCancelAction: () -> Unit,
 ) {
@@ -195,7 +196,7 @@ fun BooksScreen(
                         bookState = bookState,
                         onEditAction = onEditAction,
                         onRemoveBook = onRemoveBook,
-                        onNuevoAction = onNuevoAction,
+                        onAddAction = onAddAction,
                         modifier = modifier
                     )
 
@@ -264,7 +265,7 @@ fun IsLoading() {
  * @param bookState estado con la lista de libros y el libro a dar de alta/actualizar
  * @param onEditAction llamada cuando el usuario pulsa el botón de editar un libro
  * @param onRemoveBook llamada cuando el usuario pulsa el botón de eliminar un libro
- * @param onNuevoAction llamada cuando el usuario pulsa el botón de agregar un nuevo libro
+ * @param onAddAction llamada cuando el usuario pulsa el botón de agregar un nuevo libro
  * @param modifier modifier para el composable
  */
 @Composable
@@ -272,7 +273,7 @@ fun BooksReadAction(
     bookState: BookState,
     onEditAction: (Book) -> Unit,
     onRemoveBook: (Book) -> Unit,
-    onNuevoAction: () -> Unit,
+    onAddAction: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Column(modifier = modifier) {
@@ -373,13 +374,13 @@ fun BookScreenPreview() {
             ),
         onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
         onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
-        onAddBook = { bookViewModel.add() },
+        onAddBook = { bookViewModel.addBook() },
         onEditAction = { book -> bookViewModel.editAction(book) },
         onUpdateBook = {
             bookViewModel.updateBook()
         },
-        onRemoveBook = { book -> bookViewModel.remove(book) },
-        onNuevoAction = { bookViewModel.nuevoAction() },
+        onRemoveBook = { book -> bookViewModel.removeBook(book) },
+        onAddAction = { bookViewModel.addAction() },
         onCancelAction = {bookViewModel.cancelAction()}
     )
 }
@@ -436,7 +437,7 @@ fun BooksReadActionPreview() {
             ),
             onEditAction = {},
             onRemoveBook = {},
-            onNuevoAction = {},
+            onAddAction = {},
             modifier = Modifier.fillMaxWidth().background(Color.White)
         )
     }

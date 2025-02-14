@@ -28,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -247,7 +248,8 @@ fun PasswordField(loginData: LoginData, onLoginChanged: (String) -> Unit) {
             //backgroundColor = Color(0xFFDEDDDD),//TODO ¿como es esto en material 3?
             focusedIndicatorColor = Color.Transparent,
             unfocusedIndicatorColor = Color.Transparent
-        )
+        ),
+        visualTransformation = PasswordVisualTransformation()
     )
 }
 

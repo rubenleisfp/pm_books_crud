@@ -31,14 +31,18 @@ class BookViewModel : ViewModel() {
      * Indica si los datos introducidos por el usuario tiene información o no
      */
     private fun hasInputData(newTitle: String, newAuthor: String): Boolean {
-        throw UnsupportedOperationException("A implementar por el alumno")
+        return (newTitle.isNotEmpty() && newAuthor.isNotEmpty())
     }
 
     /**
      * Agrega un nuevo libro a la lista existente de libros
      */
     fun addBook() {
-        throw UnsupportedOperationException("A implementar por el alumno")
+        if (hasInputData(_uiState.value.newBook.title, _uiState.value.newBook.author)) {
+            val newBook = Book(getNewId(),_uiState.value.newBook.title, _uiState.value.newBook.author)
+            val updatedBooks = _uiState.value.books + newBook
+            _uiState.value = _uiState.value.copy(action = ActionEnum.READ, books = updatedBooks, newBook = Book(getNewId(), "", ""))
+        }
     }
 
 
@@ -46,7 +50,7 @@ class BookViewModel : ViewModel() {
      * Actualiza la información de un libro en la lista de libros
      */
     fun updateBook() {
-       throw UnsupportedOperationException("A implementar por el alumno")
+        throw UnsupportedOperationException("A implementar por el alumno")
     }
 
     /**
@@ -78,21 +82,22 @@ class BookViewModel : ViewModel() {
      * @param book libro que se va a editar
      */
     fun editAction(book: Book) {
-        throw UnsupportedOperationException("A implementar por el alumno")
+        _uiState.value = _uiState.value.copy(action = ActionEnum.MODIFY)
+        _uiState.value = _uiState.value.copy(newBook = book)
     }
 
     /**
      * Actualizamos el titulo del libro introducido por teclado
      */
     fun setNewBookTitle(title: String) {
-        throw UnsupportedOperationException("A implementar por el alumno")
+        _uiState.value = _uiState.value.copy(newBook = _uiState.value.newBook.copy(title = title))
     }
 
     /**
      *  Actualizamos el autor del libro introducido por teclado
      */
     fun setNewBookAuthor(author: String) {
-        throw UnsupportedOperationException("A implementar por el alumno")
+        _uiState.value = _uiState.value.copy(newBook = _uiState.value.newBook.copy(author = author))
     }
 
     /**
@@ -107,6 +112,7 @@ class BookViewModel : ViewModel() {
      * Borra el libro recibido como argumento de la lista
      */
     fun removeBook(book: Book) {
-        throw UnsupportedOperationException("A implementar por el alumno")
+        val updatedBooks = _uiState.value.books.filterNot { it == book }
+        _uiState.value = _uiState.value.copy(books = updatedBooks)
     }
 }

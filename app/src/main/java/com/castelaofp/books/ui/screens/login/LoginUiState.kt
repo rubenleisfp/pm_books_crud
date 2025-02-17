@@ -9,6 +9,5 @@ package com.castelaofp.books.ui.screens.login
 data class LoginUiState (
     val loginEnable : Boolean = false,
     val isValidLogin : LoginValidEnum = LoginValidEnum.NA,
-    val loginChecked: Boolean = false,
     val loginData: LoginData = LoginData("","")
 )

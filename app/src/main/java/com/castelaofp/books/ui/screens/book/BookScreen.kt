@@ -71,12 +71,12 @@ fun BookScreen(
         bookState = bookState,
         onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
         onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
-        onAddBook = { bookViewModel.add() },
+        onAddBook = { bookViewModel.addBook() },
         onEditAction = { book -> bookViewModel.editAction(book) },
         onUpdateBook = {
             bookViewModel.updateBook()
         },
-        onRemoveBook = { book -> bookViewModel.remove(book) },
+        onRemoveBook = { book -> bookViewModel.removeBook(book) },
         onNuevoAction = { bookViewModel.nuevoAction() },
         onCancelAction = { bookViewModel.cancelAction() },
         onSearchAction = { searchWord: String -> bookViewModel.searchAction(searchWord) },
@@ -430,12 +430,12 @@ fun BookScreenPreview() {
         ),
         onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
         onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
-        onAddBook = { bookViewModel.add() },
+        onAddBook = { bookViewModel.addBook() },
         onEditAction = { book -> bookViewModel.editAction(book) },
         onUpdateBook = {
             bookViewModel.updateBook()
         },
-        onRemoveBook = { book -> bookViewModel.remove(book) },
+        onRemoveBook = { book -> bookViewModel.removeBook(book) },
         onNuevoAction = { bookViewModel.nuevoAction() },
         onCancelAction = { bookViewModel.cancelAction() },
         onSearchAction = { searchWord -> bookViewModel.searchAction(searchWord) }

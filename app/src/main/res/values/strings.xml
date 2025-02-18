@@ -10,4 +10,5 @@
     <string name="login_button">Iniciar sesión</string>
     <string name="msg_invalid_login">Login incorrecto</string>
     <string name="forgot_password">¿Olvidaste tu contraseña?</string>
+    <string name="error_message">Error consultando el origen del dato.\nIntentélo más tarde</string>
 </resources>

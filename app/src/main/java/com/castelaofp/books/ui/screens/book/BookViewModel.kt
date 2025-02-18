@@ -11,16 +11,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
-sealed interface BookStateSealed {
-    data class Success(val books: List<Book>) : BookStateSealed
-    object Error : BookStateSealed
-    object Loading : BookStateSealed
-}
-
 class BookViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(BookState())
     val uiState: StateFlow<BookState> = _uiState.asStateFlow()
-
 
     /**
      * Call getMarsPhotos() on init so we can display status immediately.
@@ -35,14 +28,15 @@ class BookViewModel : ViewModel() {
             _uiState.value = _uiState.value.copy (action = ActionEnum.IS_LOADING)
 
 
-            
             try {
-                val booksAsString = BookApi.retrofitService.getBooks()
-                Log.e("BookViewModel", booksAsString)
+                val bookList = BookApi.retrofitService.getBooks()
+                Log.e("BookViewModel", bookList.listIterator().toString())
+                _uiState.value = _uiState.value.copy(bookList, newBook = Book(1, "", ""), action = ActionEnum.READ)
             } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(action = ActionEnum.ERROR)
                 Log.e("BookViewModel", "Exception: $e")
             }
-            _uiState.value = _uiState.value.copy(books = Datasource().getBooks(), newBook = Book(1, "", ""), action = ActionEnum.READ)
+
         }
     }
 

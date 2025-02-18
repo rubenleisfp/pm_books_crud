@@ -30,12 +30,9 @@ import com.castelaofp.books.ui.screens.login.LoginViewModel
  * Muestra una serie un catalogo de libros el cual podemos gestionar(CRUD)
  */
 class MainActivity : ComponentActivity() {
-    private val bookViewModel by viewModels<BookViewModel>()
-    private val loginViewModel by viewModels<LoginViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        bookViewModel.loadDefault()
 
         setContent {
             BooksTheme() {

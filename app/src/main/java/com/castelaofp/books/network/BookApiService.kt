@@ -17,10 +17,15 @@ import okhttp3.MediaType.Companion.toMediaType
 //Esta URL es la del anfitrion en el que se esta emulando la aplicación
 private const val BASE_URL = "http://10.0.2.2:8080/api/biblioteca/"
 
+private val json = Json {
+    ignoreUnknownKeys = true // Ignorar campos desconocidos
+}
+
 private val retrofit = Retrofit.Builder()
-    .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+    .addConverterFactory(json.asConverterFactory("application/json".toMediaType()))
     .baseUrl(BASE_URL)
     .build()
+
 
 interface BookApiService {
     @GET("libros")

@@ -18,19 +18,18 @@ class BookViewModel : ViewModel() {
     /**
      * Call getMarsPhotos() on init so we can display status immediately.
      */
-    init {
-        loadDefaultV2()
-    }
 
 
-    fun loadDefaultV2() {
+
+    fun loadDefault() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy (action = ActionEnum.IS_LOADING)
 
 
             try {
                 val bookList = BookApi.retrofitService.getBooks()
-                Log.e("BookViewModel", bookList.listIterator().toString())
+                Log.e("BookViewModel", bookList.joinToString("\n") { it.toString() })
+
                 _uiState.value = _uiState.value.copy(bookList, newBook = Book(1, "", ""), action = ActionEnum.READ)
             } catch (e: Exception) {
                 _uiState.value = _uiState.value.copy(action = ActionEnum.ERROR)
@@ -45,7 +44,7 @@ class BookViewModel : ViewModel() {
      * Para simular la carga de un repositorio: BBDD o API se realiza dentro de un scope con un delay de 3000
      *
      */
-    fun loadDefault() {
+    fun loadDefaultV2() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy (action = ActionEnum.IS_LOADING)
             delay(3000)

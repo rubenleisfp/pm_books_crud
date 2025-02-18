@@ -1,19 +1,50 @@
 package com.castelaofp.books.ui.screens.book
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.castelaofp.books.data.repository.Datasource
+import com.castelaofp.books.network.BookApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
+sealed interface BookStateSealed {
+    data class Success(val books: List<Book>) : BookStateSealed
+    object Error : BookStateSealed
+    object Loading : BookStateSealed
+}
 
 class BookViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(BookState())
     val uiState: StateFlow<BookState> = _uiState.asStateFlow()
 
+
+    /**
+     * Call getMarsPhotos() on init so we can display status immediately.
+     */
+    init {
+        loadDefaultV2()
+    }
+
+
+    fun loadDefaultV2() {
+        viewModelScope.launch {
+            _uiState.value = _uiState.value.copy (action = ActionEnum.IS_LOADING)
+
+
+            
+            try {
+                val booksAsString = BookApi.retrofitService.getBooks()
+                Log.e("BookViewModel", booksAsString)
+            } catch (e: Exception) {
+                Log.e("BookViewModel", "Exception: $e")
+            }
+            _uiState.value = _uiState.value.copy(books = Datasource().getBooks(), newBook = Book(1, "", ""), action = ActionEnum.READ)
+        }
+    }
 
     /**
      * Carga los libros de una lista

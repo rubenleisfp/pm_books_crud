@@ -1,24 +1,23 @@
 package com.castelaofp.books.network
 
-/**
- * Created by Your name on 18/02/2025.
- *
- *
- */
 import com.castelaofp.books.ui.screens.book.Book
-import retrofit2.Retrofit
-
-import retrofit2.http.GET
-import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
+import retrofit2.Response
+import retrofit2.Retrofit
+import retrofit2.http.GET
+import retrofit2.http.Path
+import retrofit2.http.Body
+import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.DELETE
+import retrofit2.http.Query
+import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 
-
-//Esta URL es la del anfitrion en el que se esta emulando la aplicación
 private const val BASE_URL = "http://10.0.2.2:8080/api/biblioteca/"
 
 private val json = Json {
-    ignoreUnknownKeys = true // Ignorar campos desconocidos
+    ignoreUnknownKeys = true
 }
 
 private val retrofit = Retrofit.Builder()
@@ -26,10 +25,26 @@ private val retrofit = Retrofit.Builder()
     .baseUrl(BASE_URL)
     .build()
 
-
 interface BookApiService {
     @GET("libros")
-    suspend fun getBooks(): List<Book>
+    suspend fun getBooks(): Response<List<Book>>
+
+    @GET("libros/{libroId}")
+    suspend fun getBookById(@Path("libroId") libroId: Int): Response<Book>
+
+    @PUT("libros/{libroId}")
+    suspend fun updateBook(@Path("libroId") libroId: Int, @Body book: Book): Response<Book>
+
+    @DELETE("libros/{libroId}")
+    suspend fun deleteBook(@Path("libroId") libroId: Int): Response<Void>
+
+    @POST("libros/add")
+    suspend fun createBook(@Body book: Book): Response<Book>
+
+    @GET("libros/search")
+    suspend fun searchBooks(@Query("q") q: String): Response<List<Book>>
+
+
 }
 
 /**

@@ -3,9 +3,7 @@ package com.castelaofp.books.ui.screens.book
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.castelaofp.books.data.repository.Datasource
 import com.castelaofp.books.network.BookApi
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -15,40 +13,34 @@ class BookViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(BookState())
     val uiState: StateFlow<BookState> = _uiState.asStateFlow()
 
-    /**
-     * Call getMarsPhotos() on init so we can display status immediately.
-     */
-
-
-
-    fun loadDefault() {
-        viewModelScope.launch {
-            _uiState.value = _uiState.value.copy (action = ActionEnum.IS_LOADING)
-
-
-            try {
-                val bookList = BookApi.retrofitService.getBooks()
-                Log.e("BookViewModel", bookList.joinToString("\n") { it.toString() })
-
-                _uiState.value = _uiState.value.copy(bookList, newBook = Book(1, "", ""), action = ActionEnum.READ)
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(action = ActionEnum.ERROR)
-                Log.e("BookViewModel", "Exception: $e")
-            }
-
-        }
-    }
+    private val LOG_TAG = "BookViewModel"
 
     /**
-     * Carga los libros de una lista
-     * Para simular la carga de un repositorio: BBDD o API se realiza dentro de un scope con un delay de 3000
+     * Carga los libros de un API
+     *
+     * En caso de exito se actualiza el estado con la nueva lista de libros y se vuelve a mostrar
+     * En caso de error se muestra el error y se vuelve a mostrar el estado de error
      *
      */
-    fun loadDefaultV2() {
+    fun loadBooks() {
+        Log.i(LOG_TAG, "Loading books")
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy (action = ActionEnum.IS_LOADING)
-            delay(3000)
-            _uiState.value = _uiState.value.copy(books = Datasource().getBooks(), newBook = Book(1, "", ""), action = ActionEnum.READ)
+            try {
+                val response = BookApi.retrofitService.getBooks()
+                if (response.isSuccessful) {
+                    val bookList = response.body() ?: emptyList()
+                    _uiState.value = _uiState.value.copy(bookList, newBook = Book(1, "", ""), action = ActionEnum.READ)
+                    Log.i(LOG_TAG, "Load was Ok")
+                } else {
+                    _uiState.value = _uiState.value.copy(action = ActionEnum.ERROR)
+                    Log.e(LOG_TAG, "Load was NOT Ok")
+                }
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(action = ActionEnum.ERROR)
+                Log.e(LOG_TAG, "Exception: $e")
+            }
+
         }
     }
 
@@ -60,13 +52,27 @@ class BookViewModel : ViewModel() {
     }
 
     /**
-     * Agrega un nuevo libro a la lista existente de libros
+     * Agrega un nuevo libro a la lista existente de libros llamando al API
      */
     fun addBook() {
         if (hasInputData(_uiState.value.newBook.title, _uiState.value.newBook.author)) {
-            val newBook = Book(getNewId(),_uiState.value.newBook.title, _uiState.value.newBook.author)
-            val updatedBooks = _uiState.value.books + newBook
-            _uiState.value = _uiState.value.copy(action = ActionEnum.READ, books = updatedBooks, newBook = Book(getNewId(), "", ""))
+            viewModelScope.launch {
+                try {
+                    val newBook = Book(getNewId(), _uiState.value.newBook.title, _uiState.value.newBook.author)
+                    val response = BookApi.retrofitService.createBook(newBook)
+                    if (response.isSuccessful) {
+                        Log.i(LOG_TAG, "Add Book was Ok")
+                        loadBooks() // refresh the list of books
+                    } else {
+                        _uiState.value = _uiState.value.copy(action = ActionEnum.ERROR)
+                        Log.e(LOG_TAG, "Add Book failed")
+                    }
+                } catch (e: Exception) {
+                    _uiState.value = _uiState.value.copy(action = ActionEnum.ERROR)
+                    Log.e(LOG_TAG, "Exception: $e")
+                }
+                loadBooks()
+            }
         }
     }
 
@@ -75,20 +81,30 @@ class BookViewModel : ViewModel() {
      * Actualiza la información de un libro en la lista de libros
      */
     fun updateBook() {
+        Log.i(LOG_TAG, "Updating Book with this info: ${_uiState.value.newBook}")
         if (hasInputData(_uiState.value.newBook.title, _uiState.value.newBook.author)) {
-            val updatedBooks = mutableListOf<Book>()
-            for (book in _uiState.value.books) {
-                if (book.id == _uiState.value.newBook.id) {
-                    updatedBooks.add(book.copy(title = _uiState.value.newBook.title, author = _uiState.value.newBook.author))
-                } else {
-                    updatedBooks.add(book)
+            viewModelScope.launch {
+                try {
+                    val response = BookApi.retrofitService.updateBook(
+                        _uiState.value.newBook.id,
+                        _uiState.value.newBook
+                    )
+                    if (response.isSuccessful) {
+                        Log.i(LOG_TAG, "Update was Ok")
+                    } else {
+                        _uiState.value = _uiState.value.copy(action = ActionEnum.ERROR)
+                        Log.e(LOG_TAG, "Update was NOT Ok")
+                    }
+                } catch (e: Exception) {
+                    _uiState.value = _uiState.value.copy(action = ActionEnum.ERROR)
+                    Log.e(LOG_TAG, "Exception: $e")
                 }
+                //Despues de actualizar cargamos de nuevo los books
+                loadBooks()
             }
-            _uiState.value = _uiState.value.copy(books = updatedBooks)
-            _uiState.value = _uiState.value.copy(action = ActionEnum.READ)
         }
-    }
 
+    }
     /**
      * Prepara la creación de un nuevo libro.
      *
@@ -145,25 +161,59 @@ class BookViewModel : ViewModel() {
     }
 
     /**
-     * Borra el libro recibido como argumento de la lista
+     * Elimina un libro de la lista de libros llamando al API
      */
     fun removeBook(book: Book) {
-        val updatedBooks = _uiState.value.books.filterNot { it == book }
-        _uiState.value = _uiState.value.copy(books = updatedBooks)
+        Log.i(LOG_TAG, "Removing Book with this info: ${book.id}")
+        viewModelScope.launch {
+            try {
+                val response = BookApi.retrofitService.deleteBook(book.id)
+                if (response.isSuccessful) {
+                    Log.i(LOG_TAG, "Remove was Ok")
+                } else {
+                    _uiState.value = _uiState.value.copy(action = ActionEnum.ERROR)
+                    Log.e(LOG_TAG, "Remove was NOT Ok")
+                }
+                Log.i("BookViewModel", "Remove was Ok")
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(action = ActionEnum.ERROR)
+                Log.e("BookViewModel", "Exception: $e")
+            }
+            loadBooks()
+        }
     }
+
 
 
     /**
-     * Busca un libro cuyo autor o titulo contenga la palabra recibida
-     * como argumento.
-     * Recarga el UIState con la lista de libros que encajan con el criterio
-     * de busqueda
+     * Realiza una búsqueda en la lista de libros por el título o autor.
+     * Si encuentra resultados, actualiza el estado con la nueva lista de libros.
+     * Si no encuentra, actualiza el estado con el error para que se muestre
+     * en la pantalla
+     *
+     * @param searchWord palabra o frase a buscar
      */
     fun searchAction(searchWord: String) {
-
-        val books = Datasource().getBooks().filter { book -> book.title.contains(searchWord, ignoreCase = true) || book.author.contains(searchWord, ignoreCase = true) }
+        Log.i(LOG_TAG, "Searching word: ${searchWord}")
         _uiState.value = _uiState.value.copy(searchWord = searchWord)
-        _uiState.value = _uiState.value.copy(books = books)
+        viewModelScope.launch {
+            try {
+                val response = BookApi.retrofitService.searchBooks(searchWord)
+                if (response.isSuccessful) {
+                    Log.i(LOG_TAG, "Search was Ok")
+                    val bookList = response.body() ?: emptyList()
+                    _uiState.value = _uiState.value.copy(books = bookList, searchWord = searchWord)
+                } else {
+                    Log.i(LOG_TAG, "Search was Ok")
+                    _uiState.value = _uiState.value.copy(action = ActionEnum.ERROR)
+                }
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(action = ActionEnum.ERROR)
+                Log.e(LOG_TAG, "Exception: $e")
+            }
+        }
 
     }
+
+
 }

@@ -33,7 +33,7 @@ fun NavigationStack() {
             route = Screen.Books.route
         ) {
             //Antes de iniciar la pantalla, cargamos los libros
-            bookViewModel.loadDefault()
+            bookViewModel.loadBooks()
             BookScreen(navController = navController, bookViewModel = bookViewModel)
         }
     }

@@ -3,12 +3,18 @@ package com.castelaofp.books.ui.screens.login
 import android.util.Log
 import android.util.Patterns
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.castelaofp.books.network.AdminApi
+import com.castelaofp.books.network.BookApi
+import com.castelaofp.books.ui.screens.book.ActionEnum
+import com.castelaofp.books.ui.screens.book.Book
 
 
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
 /**
  * Created by Your name on 11/01/2024.
@@ -57,7 +63,36 @@ class LoginViewModel : ViewModel() {
      * Comprueba que el login sea valido, es decir, que las credenciales sean Ok
      * Actualiza el UIState indicando si fue valido o no el login.
      */
-    fun onLoginSelected(): LoginValidEnum {
+    fun onLoginSelected() {
+        Log.d(TAG_LOG, "OnLoginSelected")
+
+        viewModelScope.launch {
+            var validLoginEnum = LoginValidEnum.KO
+            try {
+                val response = AdminApi.retrofitService.login(_uiState.value.loginData)
+                if (response.isSuccessful) {
+                    validLoginEnum = LoginValidEnum.OK
+                    Log.i(TAG_LOG, "Login was OK")
+                } else {
+                    Log.e(TAG_LOG, "Login was NOT Ok")
+                }
+            } catch (e: Exception) {
+                Log.e(TAG_LOG, "Exception: $e")
+            }
+
+            _uiState.update { currentState ->
+                currentState.copy(isValidLogin = validLoginEnum)
+            }
+        }
+    }
+
+
+    /**
+     * Se invoca cuando el usuario hace click en login
+     * Comprueba que el login sea valido, es decir, que las credenciales sean Ok
+     * Actualiza el UIState indicando si fue valido o no el login.
+     */
+    fun onLoginSelectedV2(): LoginValidEnum {
         //1.- Comprobar si el login fue correcto o no y actualizar el UIState
         Log.d(TAG_LOG, "OnLoginSelected")
 

@@ -83,7 +83,7 @@ fun LoginScreen(navController: NavController, loginViewModel: LoginViewModel) {
 fun LoginForm(
     loginUiState: LoginUiState,
     onLoginChanged: (String, String) -> Unit,
-    onLoginSelected: () -> LoginValidEnum,
+    onLoginSelected: () -> Unit,
     navController: NavController,
     modifier: Modifier = Modifier
 ) {
@@ -137,35 +137,38 @@ fun HeaderImage(modifier: Modifier) {
 @Composable
 fun LoginButton(
     loginUiState: LoginUiState,
-    onLoginSelected: () -> LoginValidEnum,
+    onLoginSelected: () -> Unit,  // Ahora no devuelve nada
     navController: NavController
 ) {
-    //TODO
-    //1. Crear un boton. Cuando se hace click se llamara a onLoginSelected.
-    // Solo estara habilitado cuando lo diga LoginEnable
-    // Si el login fue OK, entonces debemos redirir a la pantalla de libros
-    //2. Proporciona los estilos que gustes a los botones
-    //3. Mostrar un toast indicando si el login fue incorrecto
     Button(
         onClick = {
             Log.d(TAG_LOG, "Onclick")
-            val loginValidEnum = onLoginSelected()
-            if (loginValidEnum == LoginValidEnum.OK) {
-                navController.navigate(Screen.Books.route)
-            }
-        }, modifier = Modifier
+            onLoginSelected()
+        },
+        modifier = Modifier
             .fillMaxWidth()
-            .height(48.dp), colors = ButtonDefaults.buttonColors(
+            .height(48.dp),
+        colors = ButtonDefaults.buttonColors(
             contentColor = Color.White,
             disabledContentColor = Color.White,
-        ), enabled = loginUiState.loginEnable
+        ),
+        enabled = loginUiState.loginEnable
     ) {
         Text(stringResource(R.string.login_button))
     }
+
+    // Redirigir a la pantalla de libros cuando el login es correcto
+    LaunchedEffect(loginUiState.isValidLogin) {
+        if (loginUiState.isValidLogin == LoginValidEnum.OK) {
+            navController.navigate(Screen.Books.route)
+        }
+    }
+
     if (loginUiState.isValidLogin == LoginValidEnum.KO) {
-        mToast(LocalContext.current, (stringResource(R.string.msg_invalid_login)))
+        mToast(LocalContext.current, stringResource(R.string.msg_invalid_login))
     }
 }
+
 
 /**
  * Funcion generica para mostrar informacion de un toast

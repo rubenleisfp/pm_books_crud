@@ -88,11 +88,14 @@ class LoginViewModel : ViewModel() {
 
 
     /**
+     * Version antigua de onLoginSelected.
+     * Se comprobaba un dato hardcodeado
+     * 
      * Se invoca cuando el usuario hace click en login
      * Comprueba que el login sea valido, es decir, que las credenciales sean Ok
      * Actualiza el UIState indicando si fue valido o no el login.
      */
-    fun onLoginSelectedV2(): LoginValidEnum {
+    fun onLoginSelectedOld(): LoginValidEnum {
         //1.- Comprobar si el login fue correcto o no y actualizar el UIState
         Log.d(TAG_LOG, "OnLoginSelected")
 

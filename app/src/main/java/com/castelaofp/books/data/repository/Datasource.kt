@@ -4,6 +4,8 @@ import com.castelaofp.books.ui.screens.book.Book
 
 /**
  * Created by Your name on 11/02/2025.
+ *
+ * De utilidad para las previews
  */
 class Datasource {
 

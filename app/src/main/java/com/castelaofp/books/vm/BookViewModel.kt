@@ -58,7 +58,22 @@ class BookViewModel : ViewModel() {
             }
             _uiState.value = _uiState.value.copy(books = updatedBooks)
         }
+
+        //Opcion clasica alternativa
+        if (hasInputData(_uiState.value.newBook.title, _uiState.value.newBook.author)) {
+            val books = _uiState.value.books.toMutableList()
+            val index = books.indexOfFirst { it.id == book.id }
+            if (index != -1) {
+                books[index] = books[index].copy(
+                    title = _uiState.value.newBook.title,
+                    author = _uiState.value.newBook.author
+                )
+                _uiState.value = _uiState.value.copy(books = books)
+            }
+        }
+
     }
+
 
     /**
      * Actualizamos el titulo del libro introducido por teclado

@@ -31,6 +31,7 @@ class BookViewModel : ViewModel() {
      * Borra el libro recibido como argumento de la lista
      */
     fun remove(book: Book) {
+        //Las listas tienen un metodo llamado filterNot. Investiga su uso
         throw UnsupportedOperationException("A implementar por el alumno")
     }
 }

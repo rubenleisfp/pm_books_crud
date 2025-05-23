@@ -128,9 +128,8 @@ fun BookScreen(
     Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
 
     }
-    //TODO: pasaremos el evento onRemove a BookList
+
     Column(modifier = modifier) {
-        //TODO: pasaremos el evento onRemove a BookList
         LazyColumn(
             modifier = modifier
         ) {
@@ -138,9 +137,9 @@ fun BookScreen(
                 items = books,
                 key = { book -> book.id }
             ) { book ->
+                //TODO: pasaremos el evento onRemove a BookItem
                 BookItem(
                     book = book
-
                 )
                 Divider()
             }

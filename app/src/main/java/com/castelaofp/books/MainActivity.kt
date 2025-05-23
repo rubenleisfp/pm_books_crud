@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.dp
 import com.castelaofp.books.ui.theme.BooksTheme
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.castelaofp.books.vm.Book
+import com.castelaofp.books.vm.BookState
 import com.castelaofp.books.vm.BookViewModel
 import com.castelaofp.books.vm.books
 
@@ -64,13 +65,15 @@ import com.castelaofp.books.vm.books
  */
 class MainActivity : ComponentActivity() {
 
-    //TODO
+    //TODO - HECHO
     //Hay que crear una instancia del viewModel
+    private val bookViewModel by viewModels<BookViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //TODO
+        //TODO - HECHO
         //Invocar el metodo de carga de libros del viewModel
+        bookViewModel.loadDefault()
         setContent {
             BooksTheme() {
                 // A surface container using the 'background' color from the theme
@@ -78,7 +81,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    BookApp()
+                    BookApp(bookViewModel)
                 }
             }
         }
@@ -94,16 +97,19 @@ class MainActivity : ComponentActivity() {
  */
 @Composable
 fun BookApp(
+    bookViewModel: BookViewModel,
     modifier: Modifier = Modifier
 ) {
-    //TODO
+    val bookState by bookViewModel.uiState.collectAsState()
+    //TODO HECHO
     //En esta función, debemos recibir como argumento el viewModel
     //Ahora mismo estamos pasando como argumentos a BookScreen la lista de libros
     //obtenida directamente del datasource. Esto no es lo adecuado cuando usamos viewModel.
     //Lo mas conveniente seria obtener el BookState del viewModel que contiene la lista de libros
     //Este bookState lo podemos pasar a BookScreen para que obtenga la informacion que requiera del mismo
     BookScreen(
-        books = books,
+        bookState = bookState,
+        onRemoveBook = { bookViewModel.removeBook(it) },
         modifier = modifier
     )
 }
@@ -121,31 +127,34 @@ fun BookApp(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookScreen(
-    books: List<Book>,
+    bookState: BookState,
+    onRemoveBook: (Book) -> Unit,
     modifier: Modifier = Modifier
 ) {
     //TODO: si estan cargando debemos mostrar un CircularProgressIndicator
-    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-
-    }
-    //TODO: pasaremos el evento onRemove a BookList
-    Column(modifier = modifier) {
-        //TODO: pasaremos el evento onRemove a BookList
-        LazyColumn(
-            modifier = modifier
-        ) {
-            items(
-                items = books,
-                key = { book -> book.id }
-            ) { book ->
-                BookItem(
-                    book = book
-
-                )
-                Divider()
+    if (bookState.isLoading) {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+    } else{
+        Column(modifier = modifier) {
+            LazyColumn(
+                modifier = modifier
+            ) {
+                items(
+                    items = bookState.books,
+                    key = { book -> book.id }
+                ) { book ->
+                    BookItem(
+                        book = book,
+                        onRemoveBook = { onRemoveBook(book) }
+                    )
+                    Divider()
+                }
             }
         }
     }
+
 }
 
 
@@ -155,6 +164,7 @@ fun BookScreen(
 @Composable
 fun BookItem(
     book: Book,
+    onRemoveBook: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     //TODO: invocaremos el evento onRemove al hacer click
@@ -176,7 +186,7 @@ fun BookItem(
             text = book.author,
 
             )
-        IconButton(onClick = { Log.i("MainActivity", "onDeleteClick") }) {
+            IconButton(onClick =onRemoveBook) {
             Icon(Icons.Filled.Close, contentDescription = "Close")
         }
     }
@@ -186,13 +196,16 @@ fun BookItem(
 @Preview
 @Composable
 fun BookScreenPreview() {
-    val newBook = Book(id = 0, title = "", author = "")
+
+    val bookViewModel: BookViewModel = BookViewModel()
+    val bookState : BookState = BookState(books, false)
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
         BookScreen(
-            books = books,
+            bookState = bookState,
+            onRemoveBook =  {bookViewModel.removeBook(it)}
         )
     }
 }

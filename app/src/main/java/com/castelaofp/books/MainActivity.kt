@@ -176,7 +176,7 @@ fun BookScreen(
  */
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-private fun CamposTexto(
+fun CamposTexto(
     bookState: BookState,
     onAddBook: () -> Unit,
     onUpdateBook: () -> Unit,

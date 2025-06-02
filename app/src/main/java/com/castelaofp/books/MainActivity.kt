@@ -26,6 +26,7 @@ import androidx.compose.foundation.layout.Row
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
@@ -111,6 +112,8 @@ fun BookApp(
         onEditAction = { book -> bookViewModel.editAction(book) },
         onUpdateBook = { bookViewModel.updateBook() },
         onRemoveBook = { bookViewModel.removeBook(it) },
+        onAddAction = {bookViewModel.addAction()},
+        onCancelAction = {bookViewModel.cancelAction()},
         modifier = modifier
     )
 }
@@ -135,6 +138,21 @@ fun BookApp(
  * @param onRemoveBook llamada cuando el usuario pulsa el botón de borrar un libro
  * @param modifier modifier para el composable
  */
+//@OptIn(ExperimentalMaterial3Api::class)
+//@Composable
+//fun BooksScreen(
+//    bookState: BookState,
+//    onNewBookTitleChange: (String) -> Unit,
+//    onNewBookAuthorChange: (String) -> Unit,
+//    onAddBook: () -> Unit,
+//    onEditAction: (Book) -> Unit,
+//    onUpdateBook: () -> Unit,
+//    onRemoveBook: (Book) -> Unit,
+//    onAddAction: () -> Unit,
+//    modifier: Modifier = Modifier,
+//    onCancelAction: () -> Unit,
+
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun BookScreen(
@@ -145,22 +163,86 @@ fun BookScreen(
     onEditAction: (Book) -> Unit,
     onUpdateBook: () -> Unit,
     onRemoveBook: (Book) -> Unit,
+    onAddAction: () -> Unit,
+    onCancelAction: () -> Unit,
     modifier: Modifier = Modifier,
     ) {
-    if (bookState.action == ActionEnum.IS_LOADING) {
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
-        }
-    } else {
-        Column(modifier = modifier) {
-            CamposTexto(bookState, onAddBook, onUpdateBook, onNewBookTitleChange, onNewBookAuthorChange)
-            Spacer(modifier = Modifier.size(30.dp))
-            BookList(
-                books = bookState.books,
-                onEditAction = { book -> onEditAction(book) },
-                onRemoveBook = { book -> onRemoveBook(book) }
+    when (bookState.action) {
+        //Hecho
+        ActionEnum.IS_LOADING -> isLoading()
+        ActionEnum.CREATE -> BookEditableAction(
+            bookState = bookState,
+            onNewBookTitleChange = onNewBookTitleChange,
+            onNewBookAuthorChange = onNewBookAuthorChange,
+            onAddBook = onAddBook,
+            onUpdateBook = onUpdateBook,
+            onCancelAction = onCancelAction
+        )
+
+        ActionEnum.MODIFY -> BookEditableAction(
+            bookState = bookState,
+            onNewBookTitleChange = onNewBookTitleChange,
+            onNewBookAuthorChange = onNewBookAuthorChange,
+            onAddBook = onAddBook,
+            onUpdateBook = onUpdateBook,
+            onCancelAction = onCancelAction
+        )
+
+        ActionEnum.READ ->     BooksReadAction(
+                bookState = bookState,
+                onEditAction = onEditAction,
+                onRemoveBook = onRemoveBook,
+                onAddAction = onAddAction,
+                modifier = modifier
             )
+
+    }
+}
+
+@Composable
+fun BookEditableAction(bookState: BookState, onNewBookTitleChange: (String) -> Unit, onNewBookAuthorChange: (String) -> Unit, onAddBook: () -> Unit, onUpdateBook: () -> Unit, onCancelAction: () -> Unit) {
+    Column {
+        CamposTexto(newBook = bookState.newBook, onNewBookTitleChange, onNewBookAuthorChange)
+        Row() {
+            if (bookState.action == ActionEnum.CREATE) {
+                //{onAddBook()}
+                Button(onClick = onAddBook, modifier = Modifier.padding(top=8.dp)) {
+                    Text(stringResource(id = R.string.add_button))
+                }
+            }
+            if (bookState.action == ActionEnum.MODIFY) {
+                Button(onClick = {onUpdateBook()}, modifier = Modifier.padding(top=8.dp)) {
+                    Text(stringResource(id = R.string.modify_button))
+                }
+            }
+            Button(onClick = onCancelAction, modifier = Modifier.padding(top=8.dp)) {
+                Text(stringResource(id = R.string.cancel_button))
+            }
         }
+
+
+    }
+}
+
+@Composable
+fun BooksReadAction(bookState: BookState, onEditAction: (Book) -> Unit, onRemoveBook: (Book) -> Unit, onAddAction: () -> Unit, modifier: Modifier) {
+    Column(modifier = modifier) {
+        BookList(books = bookState.books, onEditAction = onEditAction, onRemoveBook = onRemoveBook)
+        Spacer(modifier = Modifier.weight(1f))
+        //Button(onClick = {onAddAction()},
+        Button(onClick = onAddAction,
+            modifier = Modifier
+                .padding(start = 16.dp, end = 16.dp, bottom = 16.dp)
+                .fillMaxWidth()) {
+            Text(stringResource(id = R.string.add_button))
+        }
+    }
+}
+
+@Composable
+fun isLoading() {
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+        CircularProgressIndicator()
     }
 }
 
@@ -177,16 +259,14 @@ fun BookScreen(
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
 fun CamposTexto(
-    bookState: BookState,
-    onAddBook: () -> Unit,
-    onUpdateBook: () -> Unit,
+    newBook: Book,
     onNewBookTitleChange: (String) -> Unit,
     onNewBookAuthorChange: (String) -> Unit
 ) {
     Column() {
         Row {
             TextField(
-                value = bookState.newBook.title,
+                value = newBook.title,
                 onValueChange = onNewBookTitleChange,
                 singleLine = true,
                 label = { Text(stringResource(R.string.input_titulo)) },
@@ -196,7 +276,7 @@ fun CamposTexto(
             )
 
             TextField(
-                value = bookState.newBook.author,
+                value = newBook.author,
                 onValueChange = onNewBookAuthorChange,
                 singleLine = true,
                 label = { Text(stringResource(R.string.input_author)) },
@@ -204,22 +284,6 @@ fun CamposTexto(
                     .weight(1f)
                     .padding(8.dp)
             )
-        }
-        if (bookState.action == ActionEnum.CREATE) {
-            Button(
-                onClick = { onAddBook() },
-                modifier = Modifier.padding(top = 8.dp)
-            ) {
-                Text(stringResource(R.string.add_button))
-            }
-        }
-        if (bookState.action == ActionEnum.MODIFY) {
-            Button(
-                onClick = { onUpdateBook() },
-                modifier = Modifier.padding(top = 8.dp)
-            ) {
-                Text(stringResource(R.string.modify_button))
-            }
         }
     }
 }
@@ -301,7 +365,7 @@ fun BookItem(
 @OptIn(ExperimentalMaterial3Api::class)
 @Preview
 @Composable
-fun BookScreenPreview() {
+fun BookScreenReadPreview() {
     val bookViewModel : BookViewModel = BookViewModel()
     val newBook = Book(id = 0, title = "", author = "")
     Surface(
@@ -309,13 +373,41 @@ fun BookScreenPreview() {
         color = MaterialTheme.colorScheme.background
     ) {
         BookScreen(
-            bookState = BookState(books = books, newBook = newBook, action = ActionEnum.CREATE),
+            bookState = BookState(books = books, newBook = newBook, action = ActionEnum.READ),
             onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
             onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
             onAddBook = { bookViewModel.addBook() },
             onEditAction = { book -> bookViewModel.editAction(book) },
             onUpdateBook = { bookViewModel.updateBook() },
-            onRemoveBook = { bookViewModel.removeBook(it) }
+            onRemoveBook = { bookViewModel.removeBook(it) },
+            onAddAction = {bookViewModel.addAction()},
+            onCancelAction = {bookViewModel.cancelAction()}
+
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Preview
+@Composable
+fun BookScreenLoadingPreview() {
+    val bookViewModel : BookViewModel = BookViewModel()
+    val newBook = Book(id = 0, title = "", author = "")
+    Surface(
+        modifier = Modifier.fillMaxSize(),
+        color = MaterialTheme.colorScheme.background
+    ) {
+        BookScreen(
+            bookState = BookState(books = books, newBook = newBook, action = ActionEnum.IS_LOADING),
+            onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
+            onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
+            onAddBook = { bookViewModel.addBook() },
+            onEditAction = { book -> bookViewModel.editAction(book) },
+            onUpdateBook = { bookViewModel.updateBook() },
+            onRemoveBook = { bookViewModel.removeBook(it) },
+            onAddAction = {bookViewModel.addAction()},
+            onCancelAction = {bookViewModel.cancelAction()}
+
         )
     }
 }

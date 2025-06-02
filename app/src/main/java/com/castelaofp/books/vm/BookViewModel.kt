@@ -23,7 +23,7 @@ class BookViewModel : ViewModel() {
         viewModelScope.launch {
             _uiState.value = _uiState.value.copy (action = ActionEnum.IS_LOADING)
             delay(3000)
-            _uiState.value = _uiState.value.copy(books = books, newBook = Book(1, "", ""), action = ActionEnum.CREATE)
+            _uiState.value = _uiState.value.copy(books = books, newBook = Book(1, "", ""), action = ActionEnum.READ)
         }
     }
 
@@ -41,7 +41,7 @@ class BookViewModel : ViewModel() {
         if (hasInputData(_uiState.value.newBook.title, _uiState.value.newBook.author)) {
             val newBook = Book(getNewId(),_uiState.value.newBook.title, _uiState.value.newBook.author)
             val updatedBooks = _uiState.value.books + newBook
-            _uiState.value = _uiState.value.copy(books = updatedBooks, newBook = Book(getNewId(), "", ""))
+            _uiState.value = _uiState.value.copy(books = updatedBooks, newBook = Book(getNewId(), "", ""), action = ActionEnum.READ)
         }
     }
 
@@ -56,7 +56,15 @@ class BookViewModel : ViewModel() {
             }
             _uiState.value = _uiState.value.copy(books = updatedBooks)
         }
-        _uiState.value = _uiState.value.copy(action = ActionEnum.CREATE)
+        _uiState.value = _uiState.value.copy(action = ActionEnum.READ)
+    }
+
+    fun addAction() {
+        _uiState.value = _uiState.value.copy(action = ActionEnum.CREATE, newBook = Book(getNewId(),"",""))
+    }
+
+    fun cancelAction() {
+        _uiState.value = _uiState.value.copy(action=ActionEnum.READ)
     }
 
     /**

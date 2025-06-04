@@ -57,7 +57,7 @@ import com.castelaofp.books.vm.ActionEnum
 import com.castelaofp.books.vm.Book
 import com.castelaofp.books.vm.BookState
 import com.castelaofp.books.vm.BookViewModel
-import com.castelaofp.books.vm.books
+import com.castelaofp.books.vm.Datasource
 
 
 /**
@@ -114,6 +114,7 @@ fun BookApp(
         onRemoveBook = { bookViewModel.removeBook(it) },
         onAddAction = {bookViewModel.addAction()},
         onCancelAction = {bookViewModel.cancelAction()},
+        onSearchAction = {searchWord -> bookViewModel.searchAction(searchWord)},
         modifier = modifier
     )
 }
@@ -165,6 +166,7 @@ fun BookScreen(
     onRemoveBook: (Book) -> Unit,
     onAddAction: () -> Unit,
     onCancelAction: () -> Unit,
+    onSearchAction: (String) -> Unit,
     modifier: Modifier = Modifier,
     ) {
     when (bookState.action) {
@@ -193,6 +195,7 @@ fun BookScreen(
                 onEditAction = onEditAction,
                 onRemoveBook = onRemoveBook,
                 onAddAction = onAddAction,
+                onSearchAction = onSearchAction,
                 modifier = modifier
             )
 
@@ -224,9 +227,11 @@ fun BookEditableAction(bookState: BookState, onNewBookTitleChange: (String) -> U
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BooksReadAction(bookState: BookState, onEditAction: (Book) -> Unit, onRemoveBook: (Book) -> Unit, onAddAction: () -> Unit, modifier: Modifier) {
+fun BooksReadAction(bookState: BookState, onEditAction: (Book) -> Unit, onRemoveBook: (Book) -> Unit, onAddAction: () -> Unit, onSearchAction:(String)-> Unit, modifier: Modifier) {
     Column(modifier = modifier) {
+        TextField(value = bookState.searchWord, onValueChange = onSearchAction, modifier = modifier.fillMaxWidth().padding(all=16.dp))
         BookList(books = bookState.books, onEditAction = onEditAction, onRemoveBook = onRemoveBook)
         Spacer(modifier = Modifier.weight(1f))
         //Button(onClick = {onAddAction()},
@@ -373,7 +378,7 @@ fun BookScreenReadPreview() {
         color = MaterialTheme.colorScheme.background
     ) {
         BookScreen(
-            bookState = BookState(books = books, newBook = newBook, action = ActionEnum.READ),
+            bookState = BookState(books = Datasource().getBooks(), newBook = newBook, action = ActionEnum.READ, searchWord = ""),
             onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
             onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
             onAddBook = { bookViewModel.addBook() },
@@ -381,7 +386,10 @@ fun BookScreenReadPreview() {
             onUpdateBook = { bookViewModel.updateBook() },
             onRemoveBook = { bookViewModel.removeBook(it) },
             onAddAction = {bookViewModel.addAction()},
-            onCancelAction = {bookViewModel.cancelAction()}
+            onCancelAction = {bookViewModel.cancelAction()},
+            onSearchAction = {searchWord: String -> bookViewModel.searchAction(searchWord)}
+
+
 
         )
     }
@@ -398,7 +406,7 @@ fun BookScreenLoadingPreview() {
         color = MaterialTheme.colorScheme.background
     ) {
         BookScreen(
-            bookState = BookState(books = books, newBook = newBook, action = ActionEnum.IS_LOADING),
+            bookState = BookState(books = Datasource().getBooks(), newBook = newBook, action = ActionEnum.IS_LOADING, searchWord = ""),
             onNewBookTitleChange = { bookViewModel.setNewBookTitle(it) },
             onNewBookAuthorChange = { bookViewModel.setNewBookAuthor(it) },
             onAddBook = { bookViewModel.addBook() },
@@ -406,7 +414,8 @@ fun BookScreenLoadingPreview() {
             onUpdateBook = { bookViewModel.updateBook() },
             onRemoveBook = { bookViewModel.removeBook(it) },
             onAddAction = {bookViewModel.addAction()},
-            onCancelAction = {bookViewModel.cancelAction()}
+            onCancelAction = {bookViewModel.cancelAction()},
+            onSearchAction = {searchWord: String -> bookViewModel.searchAction(searchWord)}
 
         )
     }
